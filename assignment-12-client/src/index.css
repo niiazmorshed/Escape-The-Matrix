@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.banner1 {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url("https://i.ibb.co/SnYHpwB/hassan-pasha-7-Sj-Eu-EF06-Zw-unsplash-1.jpg");
+    background-size: cover;
+    background-position: center;
+    max-width: inherit;
+    min-height: 700px;
+    /* min-height: 550px; */
+  }
+  
+  .footer {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url("https://i.ibb.co/2K5b3rN/ravi-kumar-s-KZYPer-A5s0-unsplash-1.jpg");
+    background-size: cover;
+    background-position: center;
+    min-height: 350px;
+  }
