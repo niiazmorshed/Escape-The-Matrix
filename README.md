@@ -1,4 +1,4 @@
-Escape The Matrix (EMX) Live Link- https://first-project-308dc.web.app/  <br/>
+Escape The Matrix (EMX) Live Link- https://first-project-308dc.web.app  <br/>
 
 It is an educational platform where user can enroll a course by making payment, a user can also be a teacher if admin approve his action. <br/>
 
