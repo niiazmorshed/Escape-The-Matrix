@@ -20,7 +20,7 @@ const MyClass = () => {
       <h2 className="text-4xl font-bold text-center">My Added Class</h2>
       <div className="md:grid md:grid-cols-3 gap-6 mt-20 m-12">
         
-        {myClass.map((i) => (
+        {myClass.map((i) => ( 
           <MyClassCard key={i._id} card={i} refetch={refetch}></MyClassCard>
         ))}
       </div>

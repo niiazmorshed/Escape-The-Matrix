@@ -21,7 +21,6 @@ const DarkMode = () => {
         onChange={toggleFunction}
         type="checkbox"
       />
-
       <label className="dark_mode_label"></label>
     </div>
   );

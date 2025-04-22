@@ -10,14 +10,13 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "https://first-project-308dc.web.app",
-      "https://first-project-308dc.firebaseapp.com/",
+      // "http://localhost:5173",
+      "https://escape-the-matrix-9de78.web.app",
+      "https://escape-the-matrix-9de78.firebaseapp.com/",
     ],
   })
 );
 app.use(express.json());
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.pyoefad.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -221,7 +220,7 @@ async function run() {
       res.send();
     });
 
-    // Updatinf class after adimin approve
+    // Updating class after adimin approve
     app.patch("/approve/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -342,27 +341,11 @@ async function run() {
       // console.log(result)
     });
 
-    // get total  enroll class
-    app.get("/totalenroll/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { teachermail: email };
-      const result = await ClassEnrollCollection.find(query).toArray();
-      res.send(result);
-    });
-
     // get teacher assignmetn
     app.get("/teacher-all-assignment/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
       const result = await AssignmentCollection.find(query).toArray();
-      res.send(result);
-    });
-
-    // get class info
-    app.get("/get-class-info/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await ClassesCollection.findOne(query);
       res.send(result);
     });
 
@@ -397,6 +380,22 @@ async function run() {
     // Get Feedback
     app.get("/feedback", async (req, res) => {
       const result = await FeedbackCollection.find().toArray();
+      res.send(result);
+    });
+
+    // get total  enroll class
+    app.get("/totalenroll/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { teachermail: email };
+      const result = await ClassEnrollCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // get class info
+    app.get("/get-class-info/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await ClassesCollection.findOne(query);
       res.send(result);
     });
 

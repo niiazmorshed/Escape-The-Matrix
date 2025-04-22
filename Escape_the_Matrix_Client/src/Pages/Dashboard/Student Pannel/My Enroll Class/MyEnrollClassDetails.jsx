@@ -9,19 +9,19 @@ import useAxiosPublic from "../../../../Hooks/useAxiosPublic";
 const MyEnrollClassDetails = () => {
   const enrolled = useLoaderData();
   const { user } = useAuth();
-  console.log(enrolled[0].classname, "eeee");
+  console.log(enrolled[0].classname);
   const axiosPublic = useAxiosPublic();
   const [assignment, setAssignment] = useState([]);
-  console.log(assignment, "aaaaaa");
+  console.log(assignment);
   useEffect(() => {
     axiosPublic.get("/all-assignment").then((res) => setAssignment(res.data));
   }, [axiosPublic]);
   const { register, handleSubmit, reset } = useForm();
 
   const filterAssignment = assignment.filter((item) =>
-    item.title.toLowerCase().includes(enrolled[0].classname.toLowerCase())
+    item.title.toLowerCase().includes(enrolled[0]?.classname.toLowerCase())
   );
-  console.log(filterAssignment)
+  console.log(filterAssignment);
 
   const onSubmit = (data) => {
     const reviewInfo = {
@@ -50,12 +50,10 @@ const MyEnrollClassDetails = () => {
       studentmail: user.email,
       status: "done",
     };
-    
 
     axiosPublic.post("/submittedassignment", submitInfo).then((res) => {
       console.log(res.data);
       if (res.data.insertedId) {
-        
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -65,7 +63,6 @@ const MyEnrollClassDetails = () => {
         });
       }
     });
-
   };
 
   return (

@@ -15,7 +15,7 @@ const TeacherClassDetails = () => {
 
   const { register, handleSubmit, reset } = useForm();
   const axiosPublic = useAxiosPublic();
-  const [,refetch] = useGetAssignment();
+  const [, refetch] = useGetAssignment();
 
   const [teachersAssignment, setAllTeacherAssignment] = useState([]);
 
@@ -62,7 +62,7 @@ const TeacherClassDetails = () => {
   };
   return (
     <div className="m-6">
-      <div className="flex justify-center my-12">
+      <div className="flex justify-center my-12 gap-6">
         {/* Asssignment Section */}
         <div className="card w-96 bg-base-100 shadow-xl">
           <div className="card-body">
@@ -144,6 +144,66 @@ const TeacherClassDetails = () => {
             </form>
           </dialog>
         </div>
+
+        {/* Quiz Modal */}
+
+        <div className="card w-96 bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title text-6xl font-semibold ">Quiz</h2>
+            <div className="flex justify-center p-4 my-10">
+              <button
+                className="btn btn-outline btn-warning"
+                onClick={() =>
+                  document.getElementById("my_modal_5").showModal()
+                }
+              >
+                Start
+              </button>
+            </div>
+          </div>
+        </div>
+        <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box">
+            <form>
+              <div className="flex justify-center">
+                <label className="text-2xl text-center font-semibold">
+                  Quiz Title
+                </label>
+              </div>
+              <div>
+                {/* <label>Questions</label> */}
+                {[0, 1, 2].map((_, index) => (
+                  <div key={index}>
+                    <input
+                      className="input input-info w-full my-10 text-center text-xl font-bold"
+                      placeholder="Enter Your Question"
+                    />
+                    <input
+                      className="input input-bordered w-full"
+                      placeholder="Option 1"
+                    />
+                    <input
+                      {...register(`questions[${index}].option3`)}
+                      placeholder="Option 2"
+                      className="input input-bordered w-full my-2"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-center mt-6">
+                <button className="btn btn-outline btn-accent" type="submit">
+                  Create Quiz
+                </button>
+              </div>
+            </form>
+
+            <div className="modal-action">
+              <form method="dialog">
+                <button className="btn">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
       </div>
       <hr className="border-dotted" />
       <div className="m-6">
@@ -152,7 +212,8 @@ const TeacherClassDetails = () => {
           <div className="card-body">
             <div className="flex justify-center text-4xl font-semibold min-h-96">
               <h2 className="card-title text-6xl font-semibold ">
-                Total Enrollment Card- <span className="font-bold">{enroll.length}</span>
+                Total Enrollment Card-{" "}
+                <span className="font-bold">{enroll.length}</span>
               </h2>
             </div>
           </div>
