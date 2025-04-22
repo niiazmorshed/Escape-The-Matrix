@@ -1,14 +1,45 @@
-Escape The Matrix (EMX) Live Link- https://escape-the-matrix-9de78.web.app <br/>
-mail: khan@gmail.com <br/>
-pass: 1234Aa <br/>
+# 🚀 Escape The Matrix (EMX)
 
-It is an educational platform where user can enroll a course by making payment, a user can also be a teacher if admin approve his action. <br/>
+**Live Site:** [Visit EMX](https://escape-the-matrix-9de78.web.app)  
+**Test Login:**  
+- **Email:** khan@gmail.com  
+- **Password:** 1234Aa  
 
-Properties that I have used in this projects: <br/> HTML, Bootstraps, Tailwind CSS, Javasscript, React JS, Node JS, MongoDB for (Database), Firebase for (Authentication) <br/>
+---
 
-Features:
-1. Comprehensive User Roles and Dashboards
-2. Secure Authentication and Role Management
-3. Advanced Assignment Tracking
-4. Partner and Collaboration Showcase
-5. Dynamic Content and Data Management
+## 🧠 About EMX
+
+Escape The Matrix (EMX) is a dynamic educational platform designed for students and instructors. Users can enroll in courses by making secure payments. Additionally, users can request to become instructors—pending admin approval.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** HTML, Tailwind CSS, Bootstrap, JavaScript, React.js  
+- **Backend:** Node.js, Express.js  
+- **Database:** MongoDB  
+- **Authentication:** Firebase  
+
+---
+
+## 🌟 Key Features
+
+1. **User Role Management** — Admin, Instructor, Student Dashboards  
+2. **Secure Authentication** — Firebase with protected routes and role-based access  
+3. **Assignment System** — Upload, track, and review submissions  
+4. **Instructor Approval System** — Users can request teaching access  
+5. **Dynamic CMS Features** — Update content and manage data efficiently  
+6. **Collaborator Section** — Showcasing partnerships or contributors  
+
+---
+
+## 📸 Screenshots
+
+> *(Add relevant screenshots or GIFs of your project for better engagement)*
+
+---
+
+## 📬 Contact
+
+For any inquiries or collaborations:  
+**Email:** khan@gmail.com
