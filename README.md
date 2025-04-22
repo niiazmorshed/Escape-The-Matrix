@@ -42,4 +42,4 @@ Escape The Matrix (EMX) is a dynamic educational platform designed for students 
 ## 📬 Contact
 
 For any inquiries or collaborations:  
-**Email:** khan@gmail.com
+**Email:** niazmorshedrafi@gmail.com
