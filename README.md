@@ -1,6 +1,6 @@
 # 🚀 Escape The Matrix (EMX)
 
-**Live Site:** [Visit EMX](https://escape-the-matrix-9de78.web.app)  
+**Live Site:** [EMX](https://escape-the-matrix-9de78.web.app)  
 **Test Login:**  
 - **Email:** khan@gmail.com  
 - **Password:** 1234Aa  
