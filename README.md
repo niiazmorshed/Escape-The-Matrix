@@ -33,11 +33,6 @@ Escape The Matrix (EMX) is a dynamic educational platform designed for students 
 
 ---
 
-## 📸 Screenshots
-
-> *(Add relevant screenshots or GIFs of your project for better engagement)*
-
----
 
 ## 📬 Contact
 
