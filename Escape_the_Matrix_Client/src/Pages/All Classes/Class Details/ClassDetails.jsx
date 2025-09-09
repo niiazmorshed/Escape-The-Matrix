@@ -40,7 +40,7 @@ const ClassDetails = () => {
 
   useEffect(() => {
     axios
-      .get(`https://assignment-12-server-six-zeta.vercel.app/cla/${id}`)
+      .get(`http://localhost:5000/cla/${id}`)
       .then((res) => {
         setData(res.data);
       })

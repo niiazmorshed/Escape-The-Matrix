@@ -94,7 +94,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://assignment-12-server-six-zeta.vercel.app/get-enrolled-details/${params.id}`),
+          fetch(`http://localhost:5000/get-enrolled-details/${params.id}`),
       },
       {
         path: "userprofile",
@@ -120,7 +120,7 @@ const router = createBrowserRouter([
             <AllUsers></AllUsers>
           </AdminRoute>
         ),
-        loader: () => fetch("https://assignment-12-server-six-zeta.vercel.app/allusers"),
+        loader: () => fetch("http://localhost:5000/allusers"),
       },
       {
         path: "teacherrequest",

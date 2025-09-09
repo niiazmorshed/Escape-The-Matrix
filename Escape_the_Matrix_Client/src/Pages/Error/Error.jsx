@@ -12,7 +12,7 @@ const Error = () => {
           <link rel="canonical" href="http://mysite.com/example" />
         </Helmet>
         <NavLink to="/">
-          <button className="mt-12 text-xl btn btn-outline btn-accent">
+          <button className="mt-12 text-xl btn btn-outline btn-accent ">
             Back To Home
           </button>
         </NavLink>

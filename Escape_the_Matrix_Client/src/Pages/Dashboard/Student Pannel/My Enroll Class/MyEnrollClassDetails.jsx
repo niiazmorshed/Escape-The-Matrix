@@ -9,19 +9,71 @@ import useAxiosPublic from "../../../../Hooks/useAxiosPublic";
 const MyEnrollClassDetails = () => {
   const enrolled = useLoaderData();
   const { user } = useAuth();
-  console.log(enrolled[0].classname);
+  
+  // Add proper data validation
+  const enrolledData = Array.isArray(enrolled) ? enrolled[0] : enrolled;
+  console.log("Enrolled data:", enrolledData);
+  
   const axiosPublic = useAxiosPublic();
   const [assignment, setAssignment] = useState([]);
-  console.log(assignment);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  console.log("Assignments:", assignment);
+  
   useEffect(() => {
-    axiosPublic.get("/all-assignment").then((res) => setAssignment(res.data));
+    const fetchAssignments = async () => {
+      try {
+        setLoading(true);
+        const res = await axiosPublic.get("/all-assignment");
+        setAssignment(res.data);
+      } catch (err) {
+        console.error("Error fetching assignments:", err);
+        setError("Failed to load assignments");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchAssignments();
   }, [axiosPublic]);
+  
   const { register, handleSubmit, reset } = useForm();
 
-  const filterAssignment = assignment.filter((item) =>
-    item.title.toLowerCase().includes(enrolled[0]?.classname.toLowerCase())
-  );
-  console.log(filterAssignment);
+  // Debug: Log the enrolled data structure to understand what fields are available
+  console.log("Enrolled data fields:", Object.keys(enrolledData || {}));
+  console.log("Assignment fields:", assignment.length > 0 ? Object.keys(assignment[0] || {}) : "No assignments");
+  console.log("Full enrolled data:", enrolledData);
+  
+  // Safe assignment filtering - based on the actual data structure
+  const filterAssignment = assignment.filter((item) => {
+    if (!enrolledData || !item) return false;
+    
+    console.log("Checking assignment:", item.title, "by teacher:", item.email);
+    console.log("Enrolled data teacher fields:", {
+      teachermail: enrolledData.teachermail,
+      courseTeacher: enrolledData.courseTeacher,
+      email: enrolledData.email
+    });
+    
+    // Check if we have teacher email in enrolled data
+    if (enrolledData.teachermail && item.email) {
+      console.log("Filtering by teacher email:", item.email, "===", enrolledData.teachermail);
+      return item.email === enrolledData.teachermail;
+    }
+    
+    // Check if we have courseTeacher field (this might be the teacher's email, not name)
+    if (enrolledData.courseTeacher && item.email) {
+      console.log("Filtering by courseTeacher:", item.email, "===", enrolledData.courseTeacher);
+      return item.email === enrolledData.courseTeacher;
+    }
+    
+    // If no teacher email available, show all assignments for now
+    console.log("No teacher email found, showing all assignments");
+    return true;
+  });
+  
+  console.log("Filtered assignments:", filterAssignment);
 
   const onSubmit = (data) => {
     const reviewInfo = {
@@ -65,10 +117,42 @@ const MyEnrollClassDetails = () => {
     });
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="loading loading-spinner loading-lg"></div>
+        <span className="ml-4 text-lg">Loading assignments...</span>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="alert alert-error max-w-md">
+          <span>{error}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no enrolled data
+  if (!enrolledData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="alert alert-warning max-w-md">
+          <span>No enrolled class data found.</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex justify-evenly my-4">
-        <h2 className="text-3xl">Assignments</h2>
+        <h2 className="text-3xl">Assignments for {enrolledData.classname}</h2>
       </div>
       <hr className="border-dotted" />
       <div className="flex justify-center my-6">
@@ -126,52 +210,62 @@ const MyEnrollClassDetails = () => {
       </dialog>
       {/* End Dialog */}
       <div>
-        <div className="overflow-x-auto">
-          <table className="table table-zebra">
-            {/* head */}
-            <thead>
-              <tr>
-                <th></th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Deadline</th>
-                <th>Submission</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filterAssignment.map((i, index) => (
-                <tr key={i._id}>
-                  <th>{index + 1}</th>
-                  <td>{i.title}</td>
-                  <td>{i.description}</td>
-                  <td>{i.deadline}</td>
-                  <td>
-                    {i.status === "done" ? (
-                      <button
-                        disabled
-                        onClick={() => {
-                          handleAssignment(i);
-                        }}
-                        className="btn btn-outline btn-accent"
-                      >
-                        Submit
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          handleAssignment(i);
-                        }}
-                        className="btn btn-outline btn-accent"
-                      >
-                        Submit
-                      </button>
-                    )}
-                  </td>
+        {filterAssignment.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-xl font-semibold mb-2">No Assignments Found</h3>
+            <p className="text-gray-600">
+              There are no assignments available for {enrolledData.classname} at the moment.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table table-zebra">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Deadline</th>
+                  <th>Submission</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filterAssignment.map((i, index) => (
+                  <tr key={i._id}>
+                    <th>{index + 1}</th>
+                    <td>{i.title}</td>
+                    <td>{i.description}</td>
+                    <td>{i.deadline}</td>
+                    <td>
+                      {i.status === "done" ? (
+                        <button
+                          disabled
+                          onClick={() => {
+                            handleAssignment(i);
+                          }}
+                          className="btn btn-outline btn-accent"
+                        >
+                          Submit
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            handleAssignment(i);
+                          }}
+                          className="btn btn-outline btn-accent"
+                        >
+                          Submit
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

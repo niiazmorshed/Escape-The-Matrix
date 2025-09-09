@@ -3,7 +3,7 @@ import Footer from "../Pages/Footer/Footer";
 
 const Roots = () => {
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="font-nunito">
         <Outlet></Outlet>
       </div>

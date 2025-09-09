@@ -1,12 +1,12 @@
 import {
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
+    GithubAuthProvider,
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    updateProfile,
 } from "firebase/auth";
 
 // import axios from "axios";
