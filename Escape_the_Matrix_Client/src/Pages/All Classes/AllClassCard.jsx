@@ -7,32 +7,32 @@ const AllClassCard = ({ cla }) => {
   return (
     <div
       data-aos="fade-up"
-      data-aos-duration="1200"
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 overflow-hidden"
+      data-aos-duration="1000"
+      className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-6 text-center ring-1 ring-transparent hover:ring-blue-400 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
     >
-      <div className="relative">
-        <img src={image} alt={title} className="w-full h-48 object-cover" />
-        <div className="absolute top-3 right-3 bg-blue-600 text-white text-sm font-semibold px-3 py-1 rounded-full shadow">
+      {/* Circle Image */}
+      <div className="mx-auto w-36 h-36 rounded-full overflow-hidden ring-4 ring-transparent group-hover:ring-blue-500 transition-all duration-300">
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        />
+      </div>
+
+      {/* Title & Meta */}
+      <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+      <p className="text-sm text-blue-600 dark:text-blue-300">By {name}</p>
+
+      {/* Description */}
+      <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{shortDescription}</p>
+
+      {/* Price & CTA */}
+      <div className="mt-5 flex items-center justify-between">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
           ${price}
-        </div>
-      </div>
-
-      <div className="p-5">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
-        <div className="mt-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
-            By {name}
-          </span>
-        </div>
-        <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
-          {shortDescription}
-        </p>
-      </div>
-
-      <div className="px-5 pb-5">
-        <hr className="border-gray-200 dark:border-gray-700 mb-4" />
-        <NavLink to={`/classdetails/${_id}`} className="block">
-          <button className="btn w-full bg-blue-600 hover:bg-blue-700 text-white border-0">Enroll</button>
+        </span>
+        <NavLink to={`/classdetails/${_id}`}>
+          <button className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-0">Enroll</button>
         </NavLink>
       </div>
     </div>
