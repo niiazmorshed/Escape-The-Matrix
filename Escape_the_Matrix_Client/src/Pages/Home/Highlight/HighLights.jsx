@@ -21,6 +21,7 @@ const HighLights = () => {
         <Swiper
           slidesPerView={1}
           spaceBetween={20}
+          speed={600}
           pagination={{
             clickable: true,
             bulletClass: 'swiper-pagination-bullet bg-primary',
@@ -31,8 +32,9 @@ const HighLights = () => {
             },
           }}
           autoplay={{ 
-            delay: 3000,
+            delay: 1200,
             disableOnInteraction: false,
+            pauseOnMouseEnter: true,
           }}
           breakpoints={{
             640: {

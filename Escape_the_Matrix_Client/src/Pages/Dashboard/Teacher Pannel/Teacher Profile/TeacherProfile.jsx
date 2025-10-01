@@ -26,16 +26,16 @@ const TeacherProfile = () => {
           <p className="text-gray-600 dark:text-gray-300 mt-2">Your teacher account information</p>
         </div>
 
-        <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
-          <div className="bg-gray-700 px-8 py-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <FaUser className="mr-3" />
               Teacher Account
             </h2>
-            <p className="text-gray-300 mt-1">Personal details and role information</p>
+            <p className="text-blue-100 mt-1">Personal details and role information</p>
           </div>
 
-          <div className="p-8 text-white">
+          <div className="p-8 text-gray-900 dark:text-white">
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
               <div className="flex-shrink-0">
                 <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-blue-500/40">
@@ -53,11 +53,11 @@ const TeacherProfile = () => {
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-center md:justify-start">
-                    <FaEnvelope className="text-blue-400 mr-3" />
-                    <span className="text-gray-200">{info.email || user?.email}</span>
+                    <FaEnvelope className="text-blue-600 dark:text-blue-400 mr-3" />
+                    <span className="text-gray-700 dark:text-gray-200">{info.email || user?.email}</span>
                   </div>
                   <div className="flex items-center justify-center md:justify-start">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-900/40 text-blue-200">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
                       {info.role || 'Teacher'}
                     </span>
                   </div>

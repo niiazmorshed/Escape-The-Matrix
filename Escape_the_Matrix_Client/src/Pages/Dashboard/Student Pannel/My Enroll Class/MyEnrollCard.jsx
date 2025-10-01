@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 const MyEnrollCard = ({enrollCard}) => {
     const {classname, image, name,_id,courseTeacher  } = enrollCard;
     return (
-      <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100">
+      <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100 dark:border-gray-700">
         {/* Image Section */}
         <div className="relative overflow-hidden">
           <img 
@@ -24,33 +24,24 @@ const MyEnrollCard = ({enrollCard}) => {
         {/* Content Section */}
         <div className="p-6">
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors duration-300">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
               {classname}
             </h3>
-            <div className="flex items-center text-gray-600 text-sm mb-2">
+            <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm mb-2">
               <FaUser className="mr-2" />
               <span className="font-medium">{name}</span>
             </div>
-            <div className="flex items-center text-gray-600 text-sm">
+            <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm">
               <FaBookOpen className="mr-2" />
               <span>Instructor: {courseTeacher}</span>
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-4">
-            <div className="flex justify-between text-sm text-gray-600 mb-1">
-              <span>Progress</span>
-              <span>75%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500" style={{width: '75%'}}></div>
-            </div>
-          </div>
+          {/* Progress removed */}
 
           {/* Action Button */}
           <NavLink to={`/dashboard/enrollclassdetails/${_id}`}>
-            <button className="w-full bg-primary text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:bg-secondary hover:shadow-lg transition-all duration-300 transform hover:scale-105 group">
+            <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:bg-blue-700 hover:shadow-lg transition-all duration-300 transform hover:scale-105 group">
               <span>Continue Learning</span>
               <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform duration-300" />
             </button>

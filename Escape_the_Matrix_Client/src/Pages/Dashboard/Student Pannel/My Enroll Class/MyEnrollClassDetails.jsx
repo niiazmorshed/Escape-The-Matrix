@@ -152,56 +152,49 @@ const MyEnrollClassDetails = () => {
   return (
     <div>
       <div className="flex justify-evenly my-4">
-        <h2 className="text-3xl">Assignments for {enrolledData.classname}</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Assignments for {enrolledData.classname}</h2>
       </div>
       <hr className="border-dotted" />
       <div className="flex justify-center my-6">
         <button
-          className="btn btn-outline btn-warning"
+          className="btn bg-blue-600 text-white hover:bg-blue-700 border-none"
           onClick={() => document.getElementById("modal").showModal()}
         >
           Submit Feedback
         </button>
       </div>
       <dialog id="modal" className="modal">
-        <div className="modal-box w-11/12 max-w-5xl ">
-          <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex gap-6">
-                {/* Name */}
-                <div className="form-control w-full my-8">
-                  <label className="label">
-                    <span className="label-text">Description</span>
-                  </label>
-                  <input
-                    placeholder="Enter Description"
-                    type="text"
-                    {...register("description", { required: true })}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-
-                {/* {Mail} */}
-                <div className="form-control w-full my-8">
-                  <label className="label">
-                    <span className="label-text">Ratting</span>
-                  </label>
-                  <input
-                    type="number"
-                    {...register("ratting", { required: true })}
-                    className="input input-bordered w-full"
-                  />
-                </div>
+        <div className="modal-box max-w-xl p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+              <input
+                placeholder="Enter your feedback"
+                type="text"
+                {...register("description", { required: true })}
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rating</label>
+              <div className="flex items-center gap-3">
+                <ReactStars size={28}></ReactStars>
+                <input
+                  type="number"
+                  min={1}
+                  max={5}
+                  {...register("ratting", { required: true })}
+                  className="w-20 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
               </div>
-              <div className="form-control w-full">
-                <h1>Review</h1>
-                <ReactStars size={34}></ReactStars>
-              </div>
-              <button className="my-6 text-xl btn btn-block bg-green-700">
-                Proceed
-              </button>
-            </form>
-          </div>
+            </div>
+            <div className="flex gap-3 justify-end pt-2">
+              <form method="dialog">
+                <button className="btn btn-ghost">Cancel</button>
+              </form>
+              <button type="submit" className="btn bg-blue-600 text-white hover:bg-blue-700 border-none">Submit</button>
+            </div>
+          </form>
         </div>
 
         <form method="dialog" className="modal-backdrop">
@@ -254,7 +247,7 @@ const MyEnrollClassDetails = () => {
                           onClick={() => {
                             handleAssignment(i);
                           }}
-                          className="btn btn-outline btn-accent"
+                          className="btn bg-blue-600 text-white hover:bg-blue-700 border-none"
                         >
                           Submit
                         </button>

@@ -1,12 +1,9 @@
 
 import { Helmet } from "react-helmet";
 import Navbar from "../Navbar/Navbar";
-import WeAre from "../We Are/WeAre";
 import Banner from "./Banner/Banner";
-import BecomeATutor from "./Become a Tutor/BecomeATutor";
-import Feedback from "./Feed Back/Feedback";
 import HighLights from "./Highlight/HighLights";
-import OurFamily from "./Our Family/OurFamily";
+// import OurFamily from "./Our Family/OurFamily";
 
 const Home = () => {
 
@@ -23,10 +20,7 @@ const Home = () => {
       </div>
       <div className="max-w-7xl mx-auto px-4 py-8 w-full">
         <HighLights></HighLights>
-        <Feedback></Feedback>
-        <OurFamily></OurFamily>
-        <BecomeATutor></BecomeATutor>
-        <WeAre></WeAre>
+        {/* OurFamily removed: stats moved to banner */}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import toast, { Toaster } from "react-hot-toast";
-import { FaEnvelope, FaGraduationCap, FaImage, FaLock, FaRegEye, FaRegEyeSlash, FaUser } from "react-icons/fa";
+import { FaEnvelope, FaGraduationCap, FaLock, FaRegEye, FaRegEyeSlash, FaUser } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAuth from "../../Hooks/useAuth";
@@ -20,7 +20,6 @@ const Register = () => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const name = form.get("name");
-    const photo = form.get("photo");
     const email = form.get("email");
     const pass = form.get("password");
 
@@ -44,7 +43,6 @@ const Register = () => {
 
       updateProfile(auth.currentUser, {
         displayName: name,
-        photoURL: photo,
       })
         .then(() => console.log("Success"))
         .catch((error) => {
@@ -57,7 +55,6 @@ const Register = () => {
       const userData = {
         name: name,
         email: email,
-        image: photo,
       };
 
       axiosPublic
@@ -128,24 +125,7 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Photo URL Field */}
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Photo URL
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaImage className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="url"
-                    name="photo"
-                    placeholder="Enter your photo URL"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
-                    required
-                  />
-                </div>
-              </div>
+          {/* Photo URL removed as requested */}
 
               {/* Email Field */}
               <div className="space-y-2">

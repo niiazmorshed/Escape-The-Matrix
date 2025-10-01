@@ -1,10 +1,12 @@
 
 import { FaBookOpen, FaGraduationCap, FaUsers } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import useCard from "../../../../Hooks/useCard";
 import MyEnrollCard from "./MyEnrollCard";
 
 const MyEnrollClass = () => {
   const [card, refetch] = useCard()
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen">
@@ -15,20 +17,20 @@ const MyEnrollClass = () => {
             <FaGraduationCap className="text-white text-2xl" />
           </div>
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               My Enrolled Classes
             </h1>
-            <p className="text-gray-600 text-lg">Continue your learning journey</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Continue your learning journey</p>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">Total Classes</p>
-                <p className="text-3xl font-bold text-primary">{card.length}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">Total Classes</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{card.length}</p>
               </div>
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                 <FaBookOpen className="text-primary text-xl" />
@@ -36,26 +38,14 @@ const MyEnrollClass = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">Active Classes</p>
-                <p className="text-3xl font-bold text-secondary">{card.length}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">Active Classes</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{card.length}</p>
               </div>
               <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center">
                 <FaUsers className="text-secondary text-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Progress</p>
-                <p className="text-3xl font-bold text-accent">85%</p>
-              </div>
-              <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
-                <FaGraduationCap className="text-accent text-xl" />
               </div>
             </div>
           </div>
@@ -70,7 +60,7 @@ const MyEnrollClass = () => {
           </div>
           <h3 className="text-2xl font-semibold text-gray-600 mb-2">No Classes Enrolled</h3>
           <p className="text-gray-500 mb-6">Start your learning journey by enrolling in classes</p>
-          <button className="bg-primary text-white px-8 py-3 rounded-xl font-semibold hover:bg-secondary hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+          <button onClick={() => navigate('/allclasses')} className="bg-primary text-white px-8 py-3 rounded-xl font-semibold hover:bg-secondary hover:shadow-lg transition-all duration-300 transform hover:scale-105">
             Browse Classes
           </button>
         </div>

@@ -15,9 +15,9 @@ const Dashboard = () => {
   const { user } = useAuth();
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       {/* Enhanced Sidebar */}
-      <div className="w-72 min-h-screen bg-gradient-to-b from-slate-800 via-slate-700 to-slate-600 shadow-2xl relative overflow-hidden">
+      <div className="w-72 min-h-screen bg-gradient-to-b from-slate-800 via-slate-700 to-slate-600 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 shadow-2xl relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-black opacity-10">
           <div className="absolute inset-0" style={{
@@ -228,7 +228,7 @@ const Dashboard = () => {
       </div>
 
       {/* Dashboard Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
         <div className="p-6">
           <Outlet />
         </div>
