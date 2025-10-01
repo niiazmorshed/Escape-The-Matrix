@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { FaCrown, FaSearch, FaTrash, FaUser, FaUserCheck, FaUserShield, FaUsers } from "react-icons/fa";
+import { FaCrown, FaTrash, FaUser, FaUserCheck, FaUserShield, FaUsers } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAuth from "../../../../Hooks/useAuth";
 import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
@@ -7,6 +7,7 @@ import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
 const AllUsers = () => {
   const { user, loading } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const DEFAULT_ADMIN = 'niazmorshedrafi@gmail.com';
   const { data: alluser = [], refetch } = useQuery({
     queryKey: ["alluser"],
     enabled:
@@ -19,6 +20,10 @@ const AllUsers = () => {
   });
 
   const handleDelete = (user) => {
+    if (user.email === DEFAULT_ADMIN) {
+      Swal.fire({ icon: 'warning', title: 'Default admin cannot be removed' });
+      return;
+    }
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -44,6 +49,14 @@ const AllUsers = () => {
   };
 
   const handleMakeAdmin = (user) => {
+    if (user.email === DEFAULT_ADMIN) {
+      Swal.fire({ icon: 'info', title: 'This user is already the default admin' });
+      return;
+    }
+    if (user.role !== 'teacher') {
+      Swal.fire({ icon: 'warning', title: 'Only teachers can be admins' });
+      return;
+    }
     axiosSecure.patch(`/user/admin/${user._id}`).then((res) => {
       if (res.data.modifiedCount) {
         refetch();
@@ -51,6 +64,32 @@ const AllUsers = () => {
           title: `${user.name} is Admin Now`,
           text: "User role has been updated successfully!",
           icon: "success",
+        });
+      }
+    });
+  };
+
+  const handleRemoveAdmin = (user) => {
+    if (user.email === DEFAULT_ADMIN) {
+      Swal.fire({ icon: 'warning', title: 'Default admin role cannot be changed' });
+      return;
+    }
+    if (user.role !== 'admin') return;
+    Swal.fire({
+      title: `Remove admin role from ${user.name}?`,
+      text: 'They will become a teacher again.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.patch(`/user/remove-admin/${user._id}`).then((res) => {
+          if (res.data.modifiedCount) {
+            refetch();
+            Swal.fire({ icon: 'success', title: 'Role Updated', text: `${user.name} is no longer an admin` });
+          }
         });
       }
     });
@@ -133,28 +172,7 @@ const AllUsers = () => {
           </div>
         </div>
 
-        {/* Search Section */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  id="search"
-                  placeholder="Search users by name or email..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                />
-              </div>
-            </div>
-            <button 
-              onClick={handleSearch} 
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
-            >
-              Search
-            </button>
-          </div>
-        </div>
+        {/* Search Section removed as requested */}
       </div>
 
       {/* Users Table */}
@@ -180,22 +198,34 @@ const AllUsers = () => {
                   <td className="px-6 py-4 text-sm font-medium text-gray-600">{index + 1}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">
-                          {i.name?.charAt(0) || 'U'}
-                        </span>
-                      </div>
+                      <img
+                        src={i.image || i.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(i.name || i.email || 'User')}&background=3B82F6&color=fff&size=64`}
+                        alt={i.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(i.name || i.email || 'User')}&background=3B82F6&color=fff&size=64`; }}
+                      />
                       <span className="text-sm font-semibold text-gray-800">{i.name}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">{i.email}</td>
                   <td className="px-6 py-4">
                     {i.role === "admin" ? (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                        <FaCrown className="mr-1" />
-                        Admin
-                      </span>
-                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                          <FaCrown className="mr-1" />
+                          Admin
+                        </span>
+                        {i.email !== DEFAULT_ADMIN && (
+                          <button
+                            onClick={() => handleRemoveAdmin(i)}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                          >
+                            Remove Admin
+                          </button>
+                        )}
+                      </div>
+                    ) : i.role === 'teacher' ? (
                       <button
                         onClick={() => handleMakeAdmin(i)}
                         className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 hover:bg-blue-100 hover:text-blue-800 transition-colors duration-200"
@@ -203,6 +233,11 @@ const AllUsers = () => {
                         <FaUser className="mr-1" />
                         Make Admin
                       </button>
+                    ) : (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                        <FaUserCheck className="mr-1" />
+                        Student
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -211,7 +246,7 @@ const AllUsers = () => {
                       className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"
                     >
                       <FaTrash className="mr-1" />
-                      Delete
+                      Remove User
                     </button>
                   </td>
                 </tr>

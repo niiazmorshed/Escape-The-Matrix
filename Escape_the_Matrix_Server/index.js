@@ -5,6 +5,8 @@ var jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
+// Default super admin email - immutable
+const DEFAULT_ADMIN_EMAIL = "niazmorshedrafi@gmail.com";
 
 // Middleware
 app.use(
@@ -101,8 +103,20 @@ async function run() {
 
     // User Related API
     app.get("/allusers", verifyToken, async (req, res) => {
-      const result = await UserCollection.find().toArray();
-      res.send(result);
+      const users = await UserCollection.find().toArray();
+      const normalized = users.map((u) => {
+        const role = ["admin", "teacher", "student"].includes(u.role)
+          ? u.role
+          : "student";
+        return {
+          _id: u._id,
+          name: u.name,
+          email: u.email,
+          role: u.email === DEFAULT_ADMIN_EMAIL ? "admin" : role,
+          photoURL: u.photoURL || u.image || null,
+        };
+      });
+      res.send(normalized);
     });
 
     app.post("/user", async (req, res) => {
@@ -156,28 +170,47 @@ async function run() {
 
     app.delete("/user/:id", async (req, res) => {
       const id = req.params.id;
+      const user = await UserCollection.findOne({ _id: new ObjectId(id) });
+      if (user?.email === DEFAULT_ADMIN_EMAIL) {
+        return res.status(403).send({ message: "Cannot delete default admin" });
+      }
       const query = { _id: new ObjectId(id) };
       const result = await UserCollection.deleteOne(query);
       res.send(result);
     });
 
-    // Making Admin
+    // Promote teacher to admin (only if current role is teacher)
     app.patch("/user/admin/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const updatedDoc = {
-        $set: {
-          role: "admin",
-        },
-      };
+      const filter = { _id: new ObjectId(id), role: "teacher" };
+      const updatedDoc = { $set: { role: "admin" } };
       const result = await UserCollection.updateOne(filter, updatedDoc);
-      res.send(result);
+      res.send({ modifiedCount: result.modifiedCount });
+    });
+
+    // Remove admin role (downgrade to teacher). Protect default admin.
+    app.patch("/user/remove-admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const existing = await UserCollection.findOne({ _id: new ObjectId(id) });
+      if (existing?.email === DEFAULT_ADMIN_EMAIL) {
+        return res.status(403).send({ message: "Cannot change role of default admin" });
+      }
+      if (existing?.role !== "admin") {
+        return res.status(400).send({ message: "User is not an admin" });
+      }
+      const filter = { _id: new ObjectId(id), role: "admin" };
+      const updatedDoc = { $set: { role: "teacher" } };
+      const result = await UserCollection.updateOne(filter, updatedDoc);
+      res.send({ modifiedCount: result.modifiedCount });
     });
 
     // Making Teacher - Approve teacher request
     // ====================================>
     app.patch("/user/teacherrequest/:email", async (req, res) => {
       const email = req.params.email;
+      if (email === DEFAULT_ADMIN_EMAIL) {
+        return res.status(403).send({ message: "Cannot change default admin role" });
+      }
       const query = { email: email };
       const updatedDoc = {
         $set: {
