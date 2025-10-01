@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { FaChalkboardTeacher, FaEnvelope, FaUser } from "react-icons/fa";
 import useAuth from "../../../../Hooks/useAuth";
 import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
@@ -17,6 +18,9 @@ const TeacherProfile = () => {
 
   return (
     <div className="min-h-screen bg-transparent">
+      <Helmet>
+        <title>Teacher Dashboard | Profile | EMX</title>
+      </Helmet>
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">

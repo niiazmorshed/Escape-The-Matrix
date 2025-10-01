@@ -10,8 +10,21 @@ const useClasses = () => {
   } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
-      const res = await axiosPublic.get("/classes");
-      return res.data;
+      try {
+        const res = await axiosPublic.get("/classes");
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          return res.data;
+        }
+        // Fallback: try admin/all route and filter approved
+        const alt = await axiosPublic.get("/classes/admin");
+        const data = Array.isArray(alt.data)
+          ? alt.data.filter((c) => c.approved || c.status === "approved")
+          : [];
+        return data;
+      } catch (e) {
+        // Last fallback: return empty array
+        return [];
+      }
     },
   });
   return [classes, loading, refetch];

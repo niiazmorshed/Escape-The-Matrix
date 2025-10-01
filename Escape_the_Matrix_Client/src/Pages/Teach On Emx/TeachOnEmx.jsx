@@ -17,7 +17,6 @@ const TeachOnEmx = () => {
     const requestInfo = {
       name: data.name,
       email: data.email,
-      category: data.category,
       experience: data.experience,
       approved: false,
     };
@@ -97,21 +96,7 @@ const TeachOnEmx = () => {
               {errors.experience && <p className="text-red-500 text-sm mt-1">{errors.experience.message}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teaching Category</label>
-              <select
-                {...register("category", { required: "Category is required" })}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="">Select a teaching category</option>
-                <option value="Web Development">Web Development</option>
-                <option value="Digital Marketing">Digital Marketing</option>
-                <option value="Machine Learning">Machine Learning Basics</option>
-                <option value="advanced_javaScript">Advanced JavaScript</option>
-                <option value="artificial_intelligence">Artificial Intelligence</option>
-              </select>
-              {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
-            </div>
+            {/* Teaching Category removed as requested */}
 
             <button
               type="submit"

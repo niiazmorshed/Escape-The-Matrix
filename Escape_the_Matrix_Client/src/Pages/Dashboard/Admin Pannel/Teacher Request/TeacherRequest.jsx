@@ -47,44 +47,45 @@ const TeacherRequest = () => {
   };
 
   return (
-    <div className="overflow-x-auto m-12 p-6">
-      <h2 className=" mb-16 text-4xl font-bold text-center">All Teacher Request</h2>
-      <table className="table">
+    <div className="min-h-screen">
+      <div className="mb-8">
+        <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white">All Teacher Request</h2>
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden max-w-6xl mx-auto">
+      <table className="w-full">
         {/* head */}
-        <thead>
+        <thead className="bg-gray-50 dark:bg-gray-700/40">
           <tr>
-            <th></th>
-            <th className="text-center text-xl font-bold ">Name</th>
-            <th className="text-center text-xl font-bold ">Experience</th>
-            <th className="text-center text-xl font-bold ">Title</th>
-            <th className="text-center text-xl font-bold ">Category</th>
-            <th className="text-center text-xl font-bold ">Status</th>
-            <th className="text-center text-xl font-bold "></th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">#</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Name</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Experience</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Title</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Category</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Status</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
           {req.map((i, index) => (
-            <tr key={i._id}>
-              <th>{index + 1}</th>
-              <td>
-                <div className="flex items-center gap-2">
-                  <div className="avatar">
-                    <div className="mask mask-squircle w-12 h-12">
-                      <img src={i.image} alt="Avatar Tailwind CSS Component" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-center font-bold">{i.name}</div>
-                  </div>
+            <tr key={i._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+              <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{index + 1}</td>
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <img src={i.image} className="w-10 h-10 rounded-full object-cover" />
+                  <div className="text-sm font-semibold text-gray-800 dark:text-gray-100">{i.name}</div>
                 </div>
               </td>
-              <td className="text-center text-lg font-semibold ">{i.experience}</td>
-              <td className="text-center text-lg font-semibold ">{i.title}</td>
-              <td className="text-center text-lg font-semibold ">{i.category}</td>
-              <td className="text-center text-lg font-semibold ">
-                {i?.role === "accepted" ? "Accepted" : "Pending"}
+              <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{i.experience}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{i.title}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{i.category}</td>
+              <td className="px-6 py-4 text-sm">
+                {i?.role === "accepted" ? (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Accepted</span>
+                ) : (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Pending</span>
+                )}
               </td>
-              <th>
+              <td className="px-6 py-4 space-x-2">
                 {i.approved === true ? (
                   <button
                     disabled
@@ -92,7 +93,7 @@ const TeacherRequest = () => {
                       refetch();
                       handleApprove(i);
                     }}
-                    className="btn btn-outline btn-success"
+                    className="btn btn-sm bg-blue-400 text-white border-none opacity-60"
                   >
                     Approve
                   </button>
@@ -101,36 +102,36 @@ const TeacherRequest = () => {
                     onClick={() => {
                       handleApprove(i);
                     }}
-                    className="btn btn-outline btn-success"
+                    className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-none"
                   >
                     Approve
                   </button>
                 )}
-              </th>
-              <th>
+              
                 {i.approved === true ? (
                   <button
                     disabled
                     onClick={() => {
                       handleReject(i);
                     }}
-                    className="btn btn-outline btn-success"
+                    className="btn btn-sm bg-red-400 text-white border-none opacity-60"
                   >
                     Reject
                   </button>
                 ) : (
                   <button
                     onClick={() => handleReject(i)}
-                    className="btn btn-outline btn-error"
+                    className="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-none"
                   >
                     Reject
                   </button>
                 )}
-              </th>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

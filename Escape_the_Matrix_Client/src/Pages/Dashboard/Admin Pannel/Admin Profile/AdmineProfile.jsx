@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { FaCrown, FaEnvelope, FaUser, FaUserShield } from "react-icons/fa";
 import useAuth from "../../../../Hooks/useAuth";
 import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
@@ -16,6 +17,9 @@ const AdmineProfile = () => {
     
     return (
         <div className="min-h-screen bg-transparent">
+            <Helmet>
+                <title>Admin Dashboard | Profile | EMX</title>
+            </Helmet>
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="mb-8">

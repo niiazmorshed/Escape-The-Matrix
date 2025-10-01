@@ -1,6 +1,5 @@
-import { BiBookAdd } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { FaChalkboardTeacher, FaGraduationCap, FaHome, FaUserShield } from "react-icons/fa";
+import { FaChalkboardTeacher, FaHome, FaUserShield } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import { MdHotelClass } from "react-icons/md";
 import { SiGoogleclassroom } from "react-icons/si";
@@ -17,7 +16,7 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       {/* Enhanced Sidebar */}
-      <div className="w-72 min-h-screen bg-gradient-to-b from-slate-800 via-slate-700 to-slate-600 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 shadow-2xl relative overflow-hidden">
+      <div className="w-72 min-h-screen bg-gradient-to-b from-slate-800 via-slate-700 to-slate-600 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 shadow-2xl relative overflow-hidden text-sm">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-black opacity-10">
           <div className="absolute inset-0" style={{
@@ -27,25 +26,17 @@ const Dashboard = () => {
         
         {/* Sidebar Content */}
         <div className="relative z-10 p-6">
-          {/* Logo/Header */}
+          {/* User Info (brand removed per request) */}
           <div className="mb-8">
-            <div className="flex items-center space-x-3 mb-2">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg">
-                <FaGraduationCap className="text-white text-xl" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Escape Matrix</h1>
-                <p className="text-blue-200 text-sm">Learning Platform</p>
-              </div>
-            </div>
-            
-            {/* User Info */}
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
-                    {user?.displayName?.charAt(0) || 'U'}
-                  </span>
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img
+                    src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || user?.email || 'User')}&background=003366&color=fff&size=64`}
+                    alt="User avatar"
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
                 <div>
                   <p className="text-white font-semibold text-sm">{user?.displayName || 'User'}</p>
@@ -127,20 +118,6 @@ const Dashboard = () => {
                 <div className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-3 px-3">
                   Teacher Panel
                 </div>
-                <NavLink 
-                  to="/dashboard/addclass"
-                  className={({ isActive }) => 
-                    `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                      isActive 
-                        ? 'bg-primary text-white shadow-lg transform scale-105' 
-                        : 'text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white hover:transform hover:scale-105'
-                    }`
-                  }
-                >
-                  <BiBookAdd className="text-lg" />
-                  <span className="font-medium">Add Class</span>
-                </NavLink>
-                
                 <NavLink 
                   to="/dashboard/myclass"
                   className={({ isActive }) => 
@@ -228,8 +205,8 @@ const Dashboard = () => {
       </div>
 
       {/* Dashboard Content */}
-      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-        <div className="p-6">
+      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 text-[15px]">
+        <div className="p-4 md:p-5">
           <Outlet />
         </div>
       </div>

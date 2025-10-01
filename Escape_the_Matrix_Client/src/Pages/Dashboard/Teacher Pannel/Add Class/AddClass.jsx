@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import useAuth from "../../../../Hooks/useAuth";
 import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 
 const AddClass = () => {
   const { user } = useAuth();
@@ -33,90 +33,48 @@ const AddClass = () => {
     nevigate("/dashboard/myclass");
   };
   return (
-    <div className="m-12 p-12">
-      <h2 className=" mb-12 text-4xl font-bold text-center">Add a Class</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex gap-6">
+    <div className="px-4 py-10 md:py-12">
+      <h2 className="mb-10 text-4xl font-bold text-center text-gray-900 dark:text-white">Add a Class</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 md:p-10">
+        <div className="grid md:grid-cols-2 gap-6">
           {/* Name */}
-          <div className="form-control w-full my-6">
-            <label className="label">
-              <span className="label-text">Title</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Title"
-              {...register("title", { required: true })}
-              className="input input-bordered w-full"
-            />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+            <input type="text" placeholder="Enter Title" {...register("title", { required: true })} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
           </div>
           {/* Image */}
-          <div className="form-control w-full my-6">
-            <label className="label">
-              <span className="label-text">Image</span>
-            </label>
-            <input
-              placeholder="Enter Photo URL"
-              {...register("image", { required: true })}
-              className="input input-bordered w-full"
-            />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image</label>
+            <input placeholder="Enter Photo URL" {...register("image", { required: true })} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
           </div>
         </div>
-        <div className="flex gap-6">
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
           {/* Name */}
-          <div className="form-control w-full my-6">
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <input
-              readOnly
-              defaultValue={user?.displayName}
-              type="text"
-              {...register("name", { required: true })}
-              className="input input-bordered w-full"
-            />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+            <input readOnly defaultValue={user?.displayName} type="text" {...register("name", { required: true })} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 cursor-not-allowed" />
           </div>
 
           {/* {Mail} */}
-          <div className="form-control w-full my-6">
-            <label className="label">
-              <span className="label-text">Email</span>
-            </label>
-            <input
-              readOnly
-              defaultValue={user?.email}
-              {...register("email", { required: true })}
-              className="input input-bordered w-full"
-            />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <input readOnly defaultValue={user?.email} {...register("email", { required: true })} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 cursor-not-allowed" />
           </div>
         </div>
-        <div className="flex gap-6">
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
           {/* Price */}
-          <div className="form-control w-full my-6">
-            <label className="label">
-              <span className="label-text">Price</span>
-            </label>
-            <input
-              type="number"
-              placeholder="Enter price"
-              {...register("price", { required: true })}
-              className="input input-bordered w-full"
-            />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
+            <input type="number" placeholder="Enter price" {...register("price", { required: true })} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
           </div>
 
           {/* {Mail} */}
-          <div className="form-control w-full my-6">
-            <label className="label">
-              <span className="label-text">Descriptions</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Descriptions"
-              {...register("descriptions", { required: true })}
-              className="input input-bordered w-full"
-            />
+          <div className="w-full">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descriptions</label>
+            <input type="text" placeholder="Enter Descriptions" {...register("descriptions", { required: true })} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
           </div>
         </div>
-        <button className="my-6 text-xl btn btn-block bg-green-700">
+        <button className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors">
           Add Class
         </button>
       </form>

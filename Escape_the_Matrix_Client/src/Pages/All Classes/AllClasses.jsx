@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import useClasses from "../../Hooks/useClasses";
 import Navbar from "../Navbar/Navbar";
 import AllClassCard from "./AllClassCard";
@@ -6,11 +7,16 @@ const AllClasses = () => {
   const [classes] = useClasses();
 
   const approvedClasses = Array.isArray(classes)
-    ? classes.filter((c) => c.approved)
+    ? classes.filter((c) => c.approved || c.status === 'approved')
     : [];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Helmet>
+        <meta charSet="utf-8" />
+        <title>{"All Classes"}|EMX</title>
+        <link rel="canonical" href="http://mysite.com/example" />
+      </Helmet>
       <Navbar></Navbar>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">

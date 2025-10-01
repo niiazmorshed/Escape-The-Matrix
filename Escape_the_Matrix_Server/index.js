@@ -174,7 +174,7 @@ async function run() {
       res.send(result);
     });
 
-    // Making Teacher
+    // Making Teacher - Approve teacher request
     // ====================================>
     app.patch("/user/teacherrequest/:email", async (req, res) => {
       const email = req.params.email;
@@ -183,6 +183,8 @@ async function run() {
         $set: {
           role: "teacher",
           approved: true,
+          status: "approved", // New status field
+          approvedAt: new Date(), // Track approval date
         },
       };
       const result = await UserCollection.updateOne(query, updatedDoc);
@@ -190,15 +192,45 @@ async function run() {
       res.send({ result, result2 });
     });
 
+    // Reject teacher request
+    app.patch("/user/teacherrequest/reject/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: "rejected",
+          rejectedAt: new Date(), // Track rejection date
+        },
+      };
+      const result = await TeachRequestCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
+
     // ===========================================>
 
-    // getting teaccher req for admin
+    // Getting teacher requests for admin
     app.get("/teacherreq", async (req, res) => {
       const result = await TeachRequestCollection.find().toArray();
       res.send(result);
     });
 
-    // Disabling the reject button in admin pages
+    // Get teacher requests by status (pending, approved, rejected)
+    app.get("/teacherreq/status/:status", async (req, res) => {
+      const status = req.params.status;
+      const query = { status: status };
+      const result = await TeachRequestCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Get teacher requests by experience level
+    app.get("/teacherreq/experience/:level", async (req, res) => {
+      const level = req.params.level;
+      const query = { experience: level };
+      const result = await TeachRequestCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Delete teacher request (legacy endpoint - consider using reject instead)
     app.delete("/user/teache-reject/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -206,7 +238,15 @@ async function run() {
       res.send(result);
     });
 
-    // Getting all the classes for admin
+    // Get teacher request by ID
+    app.get("/teacherreq/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await TeachRequestCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Getting all the classes for admin (including pending and rejected)
     app.get("/classatadmin", async (req, res) => {
       const result = await ClassesCollection.find().toArray();
       res.send(result);
@@ -220,22 +260,41 @@ async function run() {
       res.send();
     });
 
-    // Updating class after adimin approve
+    // Updating class after admin approve
     app.patch("/approve/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
-          approved: true,
+          status: "approved",
         },
       };
       const result = await ClassesCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
-    // Teach on EMX API
+    // Reject class by admin
+    app.patch("/reject/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: "rejected",
+        },
+      };
+      const result = await ClassesCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
+    // Teach on EMX API - Submit teacher application
     app.post("/request", async (req, res) => {
       const request = req.body;
+      // Set default values for new teacher requests
+      request.approved = false;
+      request.role = "teacher";
+      request.status = "pending"; // New status field
+      request.appliedAt = new Date(); // Track when application was submitted
+      
       const result = await TeachRequestCollection.insertOne(request);
       res.send(result);
     });
@@ -260,8 +319,24 @@ async function run() {
       res.send(result);
     });
 
+    // Get all classes (only approved ones for public)
     app.get("/classes", async (req, res) => {
+      const query = { status: "approved" };
+      const result = await ClassesCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Get all classes for admin (including pending and rejected)
+    app.get("/classes/admin", async (req, res) => {
       const result = await ClassesCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get classes by status (pending, approved, rejected)
+    app.get("/classes/status/:status", async (req, res) => {
+      const status = req.params.status;
+      const query = { status: status };
+      const result = await ClassesCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -275,6 +350,9 @@ async function run() {
     // Added Class Collections by teacher
     app.post("/addclass", async (req, res) => {
       const addClass = req.body;
+      // Set initial status as pending when teacher adds a class
+      addClass.status = "pending";
+      addClass.approved = false; // Keep for backward compatibility
       const result = await ClassesCollection.insertOne(addClass);
       res.send(result);
     });
