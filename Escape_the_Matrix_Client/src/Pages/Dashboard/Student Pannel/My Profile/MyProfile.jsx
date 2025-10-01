@@ -14,7 +14,7 @@ const MyProfile = () => {
     });
   }, [axiosSecure, user]);
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
@@ -24,19 +24,19 @@ const MyProfile = () => {
           <p className="text-gray-600 dark:text-gray-300 mt-2">Your student account information</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-6">
+        <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
+          <div className="bg-gray-700 px-8 py-6">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <FaUser className="mr-3" />
               Student Account
             </h2>
-            <p className="text-blue-100 mt-1">Personal details and role information</p>
+            <p className="text-gray-300 mt-1">Personal details and role information</p>
           </div>
 
-          <div className="p-8">
+          <div className="p-8 text-white">
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
               <div className="flex-shrink-0">
-                <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-blue-200 dark:ring-blue-800">
+                <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-blue-500/40">
                   <img
                     src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName || 'Student'}&background=3B82F6&color=fff&size=128`}
                     alt="Profile"
@@ -46,16 +46,16 @@ const MyProfile = () => {
               </div>
 
               <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-2xl font-bold mb-2">
                   {info.name || user?.displayName || 'Student'}
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-center md:justify-start">
-                    <FaEnvelope className="text-blue-600 mr-3" />
-                    <span className="text-gray-600 dark:text-gray-300">{info.email || user?.email}</span>
+                    <FaEnvelope className="text-blue-400 mr-3" />
+                    <span className="text-gray-200">{info.email || user?.email}</span>
                   </div>
                   <div className="flex items-center justify-center md:justify-start">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-900/40 text-blue-200">
                       Student
                     </span>
                   </div>

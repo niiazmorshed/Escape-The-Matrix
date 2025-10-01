@@ -1,25 +1,184 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200..1000&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@200..1000&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-
 .banner1 {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-      url("https://i.ibb.co/SnYHpwB/hassan-pasha-7-Sj-Eu-EF06-Zw-unsplash-1.jpg");
-    background-size: cover;
-    background-position: center;
-    max-width: inherit;
-    min-height: 700px;
-    /* min-height: 550px; */
-  }
-  
-  .footer {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-      url("https://i.ibb.co/2K5b3rN/ravi-kumar-s-KZYPer-A5s0-unsplash-1.jpg");
-    background-size: cover;
-    background-position: center;
-    min-height: 350px;
-  }
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("https://i.ibb.co/SnYHpwB/hassan-pasha-7-Sj-Eu-EF06-Zw-unsplash-1.jpg");
+  background-size: cover;
+  background-position: center;
+  max-width: inherit;
+  min-height: 500px;
+}
+
+.footer {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("https://i.ibb.co/2K5b3rN/ravi-kumar-s-KZYPer-A5s0-unsplash-1.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 350px;
+}
+
+/* Swiper Pagination Dots Styling */
+.swiper-pagination {
+  position: relative !important;
+  margin-top: 2rem !important;
+  text-align: center !important;
+}
+
+.swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  background: #6b7280 !important;
+  opacity: 0.5 !important;
+  margin: 0 6px !important;
+  transition: all 0.3s ease !important;
+  border-radius: 50% !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #3b82f6 !important;
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+}
+
+.swiper-pagination-bullet:hover {
+  opacity: 0.8 !important;
+  transform: scale(1.1) !important;
+}
+
+/* Consistent Card Dimensions */
+.swiper-slide {
+  height: auto !important;
+  display: flex !important;
+}
+
+/* Course Cards - Fixed Dimensions */
+.course-card {
+  min-height: 320px !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.course-card .card-content {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 120px !important;
+}
+
+.course-card .card-title {
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.course-card .card-description {
+  min-height: 60px !important;
+  flex: 1 !important;
+}
+
+/* Feedback Cards - Improved Styling */
+.feedback-card {
+  min-height: 224px !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: all 0.3s ease !important;
+}
+
+.feedback-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.feedback-card .feedback-content {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100px !important;
+}
+
+.feedback-card .feedback-text {
+  min-height: 64px !important;
+  flex: 1 !important;
+  line-height: 1.6 !important;
+  font-size: 0.95rem !important;
+}
+
+.feedback-card .feedback-footer {
+  margin-top: auto !important;
+  min-height: 48px !important;
+  padding-top: 12px !important;
+}
+
+/* Theme-aware feedback card styling */
+.feedback-card {
+  background-color: white !important;
+  border-color: #e5e7eb !important;
+  color: #374151 !important;
+}
+
+.dark .feedback-card {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+.feedback-card .feedback-text {
+  color: #4b5563 !important;
+}
+
+.dark .feedback-card .feedback-text {
+  color: #d1d5db !important;
+}
+
+.feedback-card .feedback-footer {
+  border-top-color: #e5e7eb !important;
+}
+
+.dark .feedback-card .feedback-footer {
+  border-top-color: #374151 !important;
+}
+
+/* Global Theme Integration for All Cards */
+.course-card {
+  background-color: white !important;
+  border-color: #e5e7eb !important;
+  color: #374151 !important;
+}
+
+.dark .course-card {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+.course-card .card-title {
+  color: #111827 !important;
+}
+
+.dark .course-card .card-title {
+  color: #f9fafb !important;
+}
+
+.course-card .card-description {
+  color: #4b5563 !important;
+}
+
+.dark .course-card .card-description {
+  color: #d1d5db !important;
+}
+
+/* Ensure all sections have proper theme backgrounds */
+.section-bg {
+  background-color: #f9fafb !important;
+}
+
+.dark .section-bg {
+  background-color: #111827 !important;
+}

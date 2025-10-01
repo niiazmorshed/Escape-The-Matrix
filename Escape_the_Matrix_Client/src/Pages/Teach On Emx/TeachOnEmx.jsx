@@ -55,9 +55,12 @@ const TeachOnEmx = () => {
       </Helmet>
       <Navbar />
 
-      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Teach on EMX</h1>
+      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center px-4 py-8 pt-24">
+        <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Teach on EMX</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">Join our community of educators</p>
+          </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>

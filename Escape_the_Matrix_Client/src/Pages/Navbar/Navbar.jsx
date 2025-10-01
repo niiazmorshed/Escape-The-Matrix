@@ -102,8 +102,9 @@ const Navbar = () => {
     </>
   );
   return (
-    <div className="navbar fixed bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-700 z-10 top-0 transition-all duration-300">
-      <div className="navbar-start">
+    <div className="navbar fixed bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-700 z-10 top-0 transition-all duration-300 w-full h-16">
+      <div className="max-w-7xl mx-auto w-full px-4 h-full flex items-center justify-between">
+        <div className="navbar-start flex items-center">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden text-gray-700 dark:text-gray-300">
             <svg
@@ -129,17 +130,18 @@ const Navbar = () => {
           </ul>
         </div>
         <Link to="/">
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-xl md:text-2xl font-extrabold tracking-tight">
             <span className="text-gray-800 dark:text-white">Escape The</span>{" "}
             <span className="text-primary">Matrix</span>
           </h1>
         </Link>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-2">{navLinks}</ul>
-      </div>
+        </div>
+        
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1 gap-2">{navLinks}</ul>
+        </div>
 
-      <div className="navbar-end sm:pr-12 md:pr-2 gap-2">
+        <div className="navbar-end flex items-center gap-2">
         <DarkMode />
 
         <div className="dropdown dropdown-end">
@@ -162,12 +164,11 @@ const Navbar = () => {
           {user ? (
             <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-white dark:bg-gray-800 rounded-box w-56 border border-gray-200 dark:border-gray-700">
               <li className="px-2 py-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center">
                   <div>
                     <div className="font-semibold text-sm md:text-base">{user?.displayName || user?.email}</div>
                     <div className="text-xs opacity-70">{user?.email}</div>
                   </div>
-                  <span className={`badge ${roleUi.badge}`}>{`${roleUi.icon} ${roleUi.role}`}</span>
                 </div>
               </li>
               <div className="divider my-1"></div>
@@ -184,6 +185,7 @@ const Navbar = () => {
           ) : (
             ""
           )}
+        </div>
         </div>
       </div>
     </div>
