@@ -1,41 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { NavLink, useParams } from "react-router-dom";
-import Swal from "sweetalert2";
-import useAuth from "../../../Hooks/useAuth";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import { useParams } from "react-router-dom";
+import EnrollButton from "../../../components/enrollment/EnrollButton";
 
 const ClassDetails = () => {
-  const { user } = useAuth();
   const { id } = useParams();
   const [data, setData] = useState({});
-  const axiosPublic = useAxiosPublic();
 
-  const handlePay = async () => {
-    const enrollInfo = {
-      classname: data.title,
-      name: user.displayName,
-      email: user.email,
-      image: data.image,
-      courseTeacher: data.name,
-      teachermail: data.email,
-    };
-    axiosPublic
-      .post("/enroll", enrollInfo)
-      .then((res) => {
-        console.log(res.data);
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: `Applied to ${data.title} Course Successfully`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleEnrollSuccess = (enrollmentData) => {
+    console.log("Enrollment successful:", enrollmentData);
+    // Optionally navigate to enrolled class page or refresh data
   };
 
   useEffect(() => {
@@ -80,14 +55,10 @@ const ClassDetails = () => {
               <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
                 ${data.price}
               </span>
-              <NavLink>
-                <button
-                  onClick={handlePay}
-                  className="btn bg-blue-600 hover:bg-blue-700 text-white border-0"
-                >
-                  Enroll Now
-                </button>
-              </NavLink>
+              <EnrollButton 
+                courseId={id} 
+                onEnrolled={handleEnrollSuccess}
+              />
             </div>
           </div>
         </div>
