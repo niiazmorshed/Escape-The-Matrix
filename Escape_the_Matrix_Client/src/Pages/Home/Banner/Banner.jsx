@@ -14,7 +14,7 @@ import useMyClass from "../../../Hooks/useMyClass";
 const Banner = () => {
   const [userS] = useAllUser();
   const [classes] = useMyClass();
-  const [enroll] = useEnroll();
+  const [enrollCount] = useEnroll();
   return (
     <Swiper
       modules={[Navigation, Scrollbar, A11y, EffectFade]}
@@ -52,7 +52,7 @@ const Banner = () => {
               </div>
               <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-3 text-center">
                 <div className="text-xs text-gray-200">Total Enrollment</div>
-                <div className="text-2xl font-bold text-cyan-300">{enroll.length}</div>
+                <div className="text-2xl font-bold text-cyan-300">{enrollCount}</div>
               </div>
             </div>
             {/* Enhanced CTA Button */}

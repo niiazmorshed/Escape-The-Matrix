@@ -361,6 +361,17 @@ async function run() {
       res.send(result);
     });
 
+    // Get total enrollment count (public endpoint)
+    app.get('/enrollments/count', async (req, res) => {
+      try {
+        const count = await EnrollCollection.countDocuments();
+        res.json({ count });
+      } catch (error) {
+        console.error("Get enrollment count error:", error);
+        res.status(500).send({ message: "Failed to get enrollment count" });
+      }
+    });
+
     // Get all classes for admin (including pending and rejected)
     app.get("/classes/admin", async (req, res) => {
       const result = await ClassesCollection.find().toArray();

@@ -5,7 +5,7 @@ import useMyClass from "../../../Hooks/useMyClass";
 const OurFamily = () => {
   const [userS] = useAllUser();
   const [classes] = useMyClass();
-  const [enroll] = useEnroll();
+  const [enrollCount] = useEnroll();
   return (
     <div className="py-16 bg-gray-50 dark:bg-gray-900">
       <div className="text-center mt-12 mb-8">
@@ -34,7 +34,7 @@ const OurFamily = () => {
               </div>
               <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4 transition-transform duration-300 hover:-translate-y-1">
                 <p className="text-sm text-gray-600 dark:text-gray-300">Total Enrollment</p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{enroll.length}</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{enrollCount}</p>
               </div>
             </div>
           </div>
