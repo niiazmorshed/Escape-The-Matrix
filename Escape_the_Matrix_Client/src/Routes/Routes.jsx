@@ -7,10 +7,14 @@ import AdmineProfile from "../Pages/Dashboard/Admin Pannel/Admin Profile/AdmineP
 import AllClassFromAdmin from "../Pages/Dashboard/Admin Pannel/All CLass From Admin/AllClassFromAdmin";
 import AllUsers from "../Pages/Dashboard/Admin Pannel/All Users/AllUsers";
 import TeacherRequest from "../Pages/Dashboard/Admin Pannel/Teacher Request/TeacherRequest";
+import AssessmentDetail from "../Pages/Dashboard/Student Pannel/My Assessments/AssessmentDetail";
+import CourseAssessments from "../Pages/Dashboard/Student Pannel/My Assessments/CourseAssessments";
+import StudentAssessmentDashboard from "../Pages/Dashboard/Student Pannel/My Assessments/StudentAssessmentDashboard";
 import MyEnrollClass from "../Pages/Dashboard/Student Pannel/My Enroll Class/MyEnrollClass";
 import MyEnrollClassDetails from "../Pages/Dashboard/Student Pannel/My Enroll Class/MyEnrollClassDetails";
 import MyProfile from "../Pages/Dashboard/Student Pannel/My Profile/MyProfile";
 import AddClass from "../Pages/Dashboard/Teacher Pannel/Add Class/AddClass";
+import AssessmentSubmissions from "../Pages/Dashboard/Teacher Pannel/My Class/AssessmentSubmissions";
 import MyClass from "../Pages/Dashboard/Teacher Pannel/My Class/MyClass";
 import TeacherClassDetails from "../Pages/Dashboard/Teacher Pannel/My Class/TeacherClassDetails";
 import TeacherProfile from "../Pages/Dashboard/Teacher Pannel/Teacher Profile/TeacherProfile";
@@ -104,6 +108,31 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      // Student Assessment Routes
+      {
+        path: "myassessments",
+        element: (
+          <PrivateRoute>
+            <StudentAssessmentDashboard></StudentAssessmentDashboard>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "course/:courseId/assessments",
+        element: (
+          <PrivateRoute>
+            <CourseAssessments></CourseAssessments>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "assessment/:assessmentId",
+        element: (
+          <PrivateRoute>
+            <AssessmentDetail></AssessmentDetail>
+          </PrivateRoute>
+        ),
+      },
       // Admin Route
       {
         path: "adminprofile",
@@ -168,6 +197,14 @@ const router = createBrowserRouter([
           <PrivateRoute>
             {" "}
             <TeacherClassDetails></TeacherClassDetails>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "assessment-submissions/:assessmentId",
+        element: (
+          <PrivateRoute>
+            <AssessmentSubmissions></AssessmentSubmissions>
           </PrivateRoute>
         ),
       },

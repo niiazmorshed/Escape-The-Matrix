@@ -1,252 +1,284 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import useGetAssignment from "../../../../Hooks/useGetAssignment";
-import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
 import useAuth from "../../../../Hooks/useAuth";
 import useAxiosPublic from "../../../../Hooks/useAxiosPublic";
-import PerdaySubmission from "./PerdaySubmission";
-import TotoalAssignmentCard from "./TotoalAssignmentCard";
+import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
+import CreateAssignmentModal from "./CreateAssignmentModal";
+import CreateDiscussionModal from "./CreateDiscussionModal";
+import CreateQuizModal from "./CreateQuizModal";
 
 const TeacherClassDetails = () => {
-  const [don, setdon] = useState([]);
+  const { id: classId } = useParams();
+  const navigate = useNavigate();
   const [enroll, setEnroll] = useState([]);
+  const [assessments, setAssessments] = useState([]);
+  const [loadingAssessments, setLoadingAssessments] = useState(false);
 
   const { user } = useAuth();
 
-  const { register, handleSubmit, reset } = useForm();
   const axiosPublic = useAxiosPublic();
-  const [, refetch] = useGetAssignment();
+  const axiosSecure = useAxiosSecure();
 
-  const [teachersAssignment, setAllTeacherAssignment] = useState([]);
-
-  useEffect(() => {
-    axiosPublic.get(`/submittedass/${user?.email}`).then((res) => {
-      setdon(res.data);
-    });
-  }, [axiosPublic, user]);
-
-  useEffect(() => {
-    axiosPublic
-      .get(`/teacher-all-assignment/${user.email}`)
-      .then((res) => setAllTeacherAssignment(res.data));
-  }, [axiosPublic, user.email]);
-
+  // Fetch enrollment count
   useEffect(() => {
     axiosPublic.get(`/totalenroll/${user.email}`).then((res) => {
       setEnroll(res.data);
     });
   }, [axiosPublic, user]);
 
-  const onSubmit = (data) => {
-    reset();
+  // Fetch new assessments from backend
+  useEffect(() => {
+    fetchAssessments();
+  }, [classId]);
 
-    const assInfo = {
-      title: data.title,
-      deadline: data.deadline,
-      description: data.description,
-      email: data.email,
-    };
-
-    axiosPublic.post("/assignment", assInfo).then((res) => {
-      if (res.data.insertedId) {
-        refetch();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: `${data.title} Added to the class Successfully`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
+  const fetchAssessments = async () => {
+    if (!classId) return;
+    
+    setLoadingAssessments(true);
+    try {
+      console.log("🔍 Fetching assessments for class:", classId);
+      const res = await axiosSecure.get(`/api/teacher/class/${classId}/assessments`);
+      
+      if (res.data?.success) {
+        console.log("✅ Assessments loaded:", res.data.data);
+        setAssessments(res.data.data);
       }
-    });
+    } catch (error) {
+      console.error("❌ Error fetching assessments:", error);
+      toast.error("Failed to load assessments");
+    } finally {
+      setLoadingAssessments(false);
+    }
   };
+
+  const publishAssessment = async (assessmentId) => {
+    try {
+      const res = await axiosSecure.put(`/api/teacher/assessment/${assessmentId}/publish`);
+      if (res.data?.success) {
+        toast.success('Assessment published successfully!');
+        fetchAssessments();
+      }
+    } catch (error) {
+      toast.error('Failed to publish assessment');
+    }
+  };
+
+  const deleteAssessment = async (assessmentId) => {
+    try {
+      const res = await axiosSecure.delete(`/api/teacher/assessment/${assessmentId}`);
+      if (res.data?.success) {
+        toast.success('Assessment deleted successfully!');
+        fetchAssessments();
+      }
+    } catch (error) {
+      toast.error('Failed to delete assessment');
+    }
+  };
+
   return (
     <div className="m-6">
-      <div className="flex justify-center my-12 gap-6">
-        {/* Asssignment Section */}
-        <div className="card w-96 bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title text-6xl font-semibold ">Assignment</h2>
-            <div className="flex justify-center p-4 my-10">
+      {/* New Assessment System */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Create Assessment</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Assignment Card */}
+          <div className="card bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <div className="card-body items-center text-center">
+              <h2 className="card-title text-4xl font-bold mb-4">📄 Assignment</h2>
+              <p className="mb-6">Create assignment with file upload support</p>
               <button
-                className="btn btn-outline btn-warning"
-                onClick={() => document.getElementById("modal").showModal()}
+                className="btn btn-warning btn-lg"
+                onClick={() => document.getElementById('create_assignment_modal').showModal()}
               >
                 Create
               </button>
             </div>
           </div>
-          {/* Start */}
-          <dialog id="modal" className="modal">
-            <div className="modal-box w-11/12 max-w-5xl ">
-              <div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="flex gap-6">
-                    {/* Name */}
-                    <div className="form-control w-full my-6">
-                      <label className="label">
-                        <span className="label-text">Title</span>
-                      </label>
-                      <input
-                        {...register("title", { required: true })}
-                        className="input input-bordered w-full"
-                      />
-                    </div>
-                    {/* Image */}
-                    <div className="form-control w-full my-6">
-                      <label className="label">
-                        <span className="label-text">Deadlines</span>
-                      </label>
-                      <input
-                        type="date"
-                        placeholder="Enter Deadlines"
-                        {...register("deadline", { required: true })}
-                        className="input input-bordered w-full"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-6">
-                    {/* Name */}
-                    <div className="form-control w-full my-6">
-                      <label className="label">
-                        <span className="label-text">
-                          Assignment Descriptions
-                        </span>
-                      </label>
-                      <input
-                        placeholder="Enter Description"
-                        type="text"
-                        {...register("description", { required: true })}
-                        className="input input-bordered w-full"
-                      />
-                    </div>
 
-                    {/* {Mail} */}
-                    <div className="form-control w-full my-6">
-                      <label className="label">
-                        <span className="label-text">Email</span>
-                      </label>
-                      <input
-                        {...register("email", { required: true })}
-                        className="input input-bordered w-full"
-                      />
-                    </div>
-                  </div>
-                  <button className="my-6 text-xl btn btn-block bg-green-700">
-                    Proceed
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </dialog>
-        </div>
-
-        {/* Quiz Modal */}
-
-        <div className="card w-96 bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title text-6xl font-semibold ">Quiz</h2>
-            <div className="flex justify-center p-4 my-10">
+          {/* Quiz Card */}
+          <div className="card bg-gradient-to-br from-green-500 to-green-600 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <div className="card-body items-center text-center">
+              <h2 className="card-title text-4xl font-bold mb-4">🧠 Quiz</h2>
+              <p className="mb-6">Create quiz with auto-grading</p>
               <button
-                className="btn btn-outline btn-warning"
-                onClick={() =>
-                  document.getElementById("my_modal_5").showModal()
-                }
+                className="btn btn-warning btn-lg"
+                onClick={() => document.getElementById('create_quiz_modal').showModal()}
               >
                 Start
               </button>
             </div>
           </div>
+
+          {/* Discussion Card */}
+          <div className="card bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <div className="card-body items-center text-center">
+              <h2 className="card-title text-4xl font-bold mb-4">💬 Discussion</h2>
+              <p className="mb-6">Create discussion topic for students</p>
+              <button
+                className="btn btn-warning btn-lg"
+                onClick={() => document.getElementById('create_discussion_modal').showModal()}
+              >
+                Create
+              </button>
+            </div>
+          </div>
         </div>
-        <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-          <div className="modal-box">
-            <form>
-              <div className="flex justify-center">
-                <label className="text-2xl text-center font-semibold">
-                  Quiz Title
-                </label>
-              </div>
-              <div>
-                {/* <label>Questions</label> */}
-                {[0, 1, 2].map((_, index) => (
-                  <div key={index}>
-                    <input
-                      className="input input-info w-full my-10 text-center text-xl font-bold"
-                      placeholder="Enter Your Question"
-                    />
-                    <input
-                      className="input input-bordered w-full"
-                      placeholder="Option 1"
-                    />
-                    <input
-                      {...register(`questions[${index}].option3`)}
-                      placeholder="Option 2"
-                      className="input input-bordered w-full my-2"
-                    />
+      </div>
+
+      {/* Created Assessments List */}
+      {loadingAssessments ? (
+        <div className="flex justify-center py-12">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      ) : assessments.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Your Assessments</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {assessments.map((assessment) => (
+              <div
+                key={assessment._id}
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+              >
+                {/* Card Header with Gradient */}
+                <div className={`p-4 ${
+                  assessment.type === 'assignment'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600'
+                    : assessment.type === 'quiz'
+                    ? 'bg-gradient-to-r from-green-500 to-green-600'
+                    : 'bg-gradient-to-r from-purple-500 to-purple-600'
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white text-sm font-semibold uppercase tracking-wide">
+                      {assessment.type === 'assignment' ? '📄 Assignment' : 
+                       assessment.type === 'quiz' ? '🧠 Quiz' : '💬 Discussion'}
+                    </span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        assessment.status === 'published'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                          : assessment.status === 'draft'
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                      }`}
+                    >
+                      {assessment.status}
+                    </span>
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-center mt-6">
-                <button className="btn btn-outline btn-accent" type="submit">
-                  Create Quiz
-                </button>
-              </div>
-            </form>
+                  <h3 className="text-xl font-bold text-white truncate">{assessment.title}</h3>
+                </div>
 
-            <div className="modal-action">
-              <form method="dialog">
-                <button className="btn">Close</button>
-              </form>
-            </div>
-          </div>
-        </dialog>
-      </div>
-      <hr className="border-dotted" />
-      <div className="m-6">
-        {/* Class Progress Section */}
-        <div className=" flex justify-center card  bg-base-100 shadow-xl">
-          <div className="card-body">
-            <div className="flex justify-center text-4xl font-semibold min-h-96">
-              <h2 className="card-title text-6xl font-semibold ">
-                Total Enrollment Card-{" "}
-                <span className="font-bold">{enroll.length}</span>
-              </h2>
-            </div>
-          </div>
-        </div>
+                {/* Card Body */}
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Due: {new Date(assessment.dueDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        {assessment.totalPoints} pts
+                      </span>
+                    </div>
+                  </div>
 
-        <div className="card bg-base-100 shadow-xl p-6 my-6">
-          <div className="card-body">
-            <div className="flex justify-center text-4xl font-semibold">
-              <h1>Total Assignment</h1>
-            </div>
-            <div className="grid grid-cols-3 gap-6">
-              {teachersAssignment.map((i) => (
-                <TotoalAssignmentCard
-                  key={i._id}
-                  totalCard={i}
-                ></TotoalAssignmentCard>
-              ))}
-            </div>
+                  {/* Actions */}
+                  <div className="flex gap-2 mt-4">
+                    {assessment.status === 'published' && (
+                      <button
+                        onClick={() => navigate(`/dashboard/assessment-submissions/${assessment._id}`)}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+                      >
+                        View Submissions
+                      </button>
+                    )}
+                    {assessment.status === 'draft' && (
+                      <button
+                        onClick={() => publishAssessment(assessment._id)}
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+                      >
+                        Publish
+                      </button>
+                    )}
+                    <button
+                      onClick={() => deleteAssessment(assessment._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="card bg-base-100 shadow-xl p-6 my-6">
-          <div className="flex justify-center text-4xl font-semibold">
-            <h1>Per Day Submission</h1>
+      )}
+
+      {/* Modals */}
+      <CreateAssignmentModal classId={classId} onSuccess={fetchAssessments} />
+      <CreateQuizModal classId={classId} onSuccess={fetchAssessments} />
+      <CreateDiscussionModal classId={classId} onSuccess={fetchAssessments} />
+
+      {/* Class Overview Stats */}
+      <div className="mt-8 mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Class Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Total Enrollments */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">Total Enrollments</p>
+                <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">{enroll.length}</p>
+              </div>
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+            </div>
           </div>
-          <div className="card-body">
-            <div className="grid grid-cols-3 gap-6">
-              {don.map((i) => (
-                <PerdaySubmission key={i._id} submission={i}></PerdaySubmission>
-              ))}
+
+          {/* Total Assessments */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">Total Assessments</p>
+                <p className="text-4xl font-bold text-green-600 dark:text-green-400 mt-2">{assessments.length}</p>
+              </div>
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Published Assessments */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">Published</p>
+                <p className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">
+                  {assessments.filter(a => a.status === 'published').length}
+                </p>
+              </div>
+              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 };

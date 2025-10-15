@@ -3,10 +3,50 @@ const cors = require("cors");
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const app = express();
 const port = process.env.PORT || 5000;
 // Default super admin email - immutable
 const DEFAULT_ADMIN_EMAIL = "niazmorshedrafi@gmail.com";
+
+// Create uploads directory if it doesn't exist  
+const uploadsDir = path.join(__dirname, "uploads", "submissions");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const studentId = req.decoded?.email || "unknown";
+    const assessmentId = req.body.assessmentId || "assessment";
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, `${studentId}_${assessmentId}_${timestamp}${ext}`);
+  },
+});
+
+// File filter for allowed types
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = [".pdf", ".doc", ".docx"];
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (allowedTypes.includes(ext)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only PDF, DOC, and DOCX files are allowed"), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+});
 
 // Middleware
 app.use(
@@ -49,6 +89,22 @@ async function run() {
     const EnrollCollection = client
       .db("EscapeTheMatrix")
       .collection("EnrollCollection");
+
+    // Assessment Collections
+    const AssessmentCollection = client
+      .db("EscapeTheMatrix")
+      .collection("AssessmentCollection");
+
+    // SUBMISSIONS COLLECTION - Separate collection for student submissions
+    const SubmissionsCollection = client
+      .db("EscapeTheMatrix")
+      .collection("SubmissionsCollection");
+
+    // Create indexes for submissions collection
+    SubmissionsCollection.createIndex({ assessmentId: 1, studentId: 1 });
+    SubmissionsCollection.createIndex({ studentEmail: 1 });
+    SubmissionsCollection.createIndex({ classId: 1 });
+    SubmissionsCollection.createIndex({ status: 1 });
 
 
     // Jwt Related API
@@ -1053,7 +1109,7 @@ async function run() {
         }
 
         // Check if already submitted
-        const existingSubmission = await StudentSubmissionsCollection.findOne({
+        const existingSubmission = await SubmissionsCollection.findOne({
           enrollmentId: new ObjectId(enrollmentId),
           assignmentId: new ObjectId(assignmentId)
         });
@@ -1074,7 +1130,7 @@ async function run() {
           feedback: ""
         };
 
-        const result = await StudentSubmissionsCollection.insertOne(submission);
+        const result = await SubmissionsCollection.insertOne(submission);
         res.status(201).send({ message: "Assignment submitted successfully", submissionId: result.insertedId });
       } catch (error) {
         console.error("Submit assignment error:", error);
@@ -1097,7 +1153,7 @@ async function run() {
           return res.status(404).send({ message: "Enrollment not found or access denied" });
         }
 
-        const submissions = await StudentSubmissionsCollection.find({
+        const submissions = await SubmissionsCollection.find({
           enrollmentId: new ObjectId(enrollmentId)
         }).toArray();
 
@@ -1123,7 +1179,7 @@ async function run() {
           return res.status(403).send({ message: "Access denied. You don't own this assignment." });
         }
 
-        const submissions = await StudentSubmissionsCollection.find({
+        const submissions = await SubmissionsCollection.find({
           assignmentId: new ObjectId(assignmentId)
         }).toArray();
 
@@ -1154,7 +1210,7 @@ async function run() {
         const { grade, feedback } = req.body;
         
         // Find the submission
-        const submission = await StudentSubmissionsCollection.findOne({
+        const submission = await SubmissionsCollection.findOne({
           _id: new ObjectId(submissionId)
         });
 
@@ -1173,7 +1229,7 @@ async function run() {
         }
 
         // Update submission with grade and feedback
-        const result = await StudentSubmissionsCollection.updateOne(
+        const result = await SubmissionsCollection.updateOne(
           { _id: new ObjectId(submissionId) },
           { 
             $set: { 
@@ -1192,10 +1248,10 @@ async function run() {
 
           if (enrollment) {
             // Simple progress calculation - can be enhanced
-            const totalSubmissions = await StudentSubmissionsCollection.countDocuments({
+            const totalSubmissions = await SubmissionsCollection.countDocuments({
               enrollmentId: submission.enrollmentId
             });
-            const gradedSubmissions = await StudentSubmissionsCollection.countDocuments({
+            const gradedSubmissions = await SubmissionsCollection.countDocuments({
               enrollmentId: submission.enrollmentId,
               grade: { $ne: null }
             });
@@ -1215,6 +1271,1098 @@ async function run() {
       } catch (error) {
         console.error("Grade submission error:", error);
         res.status(500).send({ message: "Failed to grade submission" });
+      }
+    });
+
+    // ==================== ASSESSMENT SYSTEM ENDPOINTS ====================
+
+    // ==================== TEACHER ASSESSMENT ROUTES ====================
+
+    // Create assessment (Assignment, Quiz, or Discussion)
+    app.post("/api/teacher/class/:classId/assessment", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const classId = req.params.classId;
+        const teacherEmail = req.decoded.email;
+
+        // Verify teacher owns the class
+        const classData = await ClassesCollection.findOne({
+          _id: new ObjectId(classId),
+          email: teacherEmail
+        });
+
+        if (!classData) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied. You don't own this class." 
+          });
+        }
+
+        const assessment = {
+          classId: new ObjectId(classId),
+          teacherEmail: teacherEmail,
+          type: req.body.type, // "assignment" | "quiz" | "discussion"
+          title: req.body.title,
+          description: req.body.description || "",
+          instructions: req.body.instructions || "",
+          startDate: req.body.startDate ? new Date(req.body.startDate) : new Date(),
+          dueDate: new Date(req.body.dueDate),
+          availableUntil: req.body.availableUntil ? new Date(req.body.availableUntil) : null,
+          totalPoints: req.body.totalPoints || 100,
+          passingScore: req.body.passingScore || 60,
+          allowLateSubmission: req.body.allowLateSubmission || false,
+          attempts: req.body.attempts || 1,
+          timeLimit: req.body.timeLimit || null,
+          content: {
+            questions: req.body.content?.questions || [],
+            attachments: req.body.content?.attachments || [],
+            submissionType: req.body.content?.submissionType || "both",
+            allowedFileTypes: req.body.content?.allowedFileTypes || [".pdf", ".doc", ".docx"],
+            maxFileSize: req.body.content?.maxFileSize || 10485760,
+            discussionPrompt: req.body.content?.discussionPrompt || "",
+            requirePeerResponse: req.body.content?.requirePeerResponse || false,
+            minResponses: req.body.content?.minResponses || 0,
+            allowAnonymous: req.body.content?.allowAnonymous || false
+          },
+          status: req.body.status || "draft",
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const result = await AssessmentCollection.insertOne(assessment);
+        
+        res.status(201).send({ 
+          success: true, 
+          message: "Assessment created successfully",
+          assessmentId: result.insertedId,
+          data: assessment
+        });
+      } catch (error) {
+        console.error("Create assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to create assessment" 
+        });
+      }
+    });
+
+    // Get all assessments for a class
+    app.get("/api/teacher/class/:classId/assessments", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const classId = req.params.classId;
+        const teacherEmail = req.decoded.email;
+
+        // Verify teacher owns the class
+        const classData = await ClassesCollection.findOne({
+          _id: new ObjectId(classId),
+          email: teacherEmail
+        });
+
+        if (!classData) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        const assessments = await AssessmentCollection.find({
+          classId: new ObjectId(classId)
+        }).toArray();
+
+        res.send({ 
+          success: true, 
+          data: assessments 
+        });
+      } catch (error) {
+        console.error("Get assessments error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get assessments" 
+        });
+      }
+    });
+
+    // Get single assessment
+    app.get("/api/teacher/assessment/:assessmentId", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const teacherEmail = req.decoded.email;
+
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          teacherEmail: teacherEmail
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+
+        res.send({ 
+          success: true, 
+          data: assessment 
+        });
+      } catch (error) {
+        console.error("Get assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get assessment" 
+        });
+      }
+    });
+
+    // Update assessment
+    app.put("/api/teacher/assessment/:assessmentId", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const teacherEmail = req.decoded.email;
+
+        // Verify ownership
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          teacherEmail: teacherEmail
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+
+        const updateData = {
+          type: req.body.type,
+          title: req.body.title,
+          description: req.body.description,
+          instructions: req.body.instructions,
+          dueDate: req.body.dueDate ? new Date(req.body.dueDate) : assessment.dueDate,
+          availableUntil: req.body.availableUntil ? new Date(req.body.availableUntil) : assessment.availableUntil,
+          totalPoints: req.body.totalPoints,
+          passingScore: req.body.passingScore,
+          allowLateSubmission: req.body.allowLateSubmission,
+          attempts: req.body.attempts,
+          timeLimit: req.body.timeLimit,
+          content: req.body.content || assessment.content,
+          updatedAt: new Date()
+        };
+
+        const result = await AssessmentCollection.updateOne(
+          { _id: new ObjectId(assessmentId) },
+          { $set: updateData }
+        );
+
+        if (result.modifiedCount === 1) {
+          res.send({ 
+            success: true, 
+            message: "Assessment updated successfully" 
+          });
+        } else {
+          res.status(400).send({ 
+            success: false, 
+            message: "No changes made" 
+          });
+        }
+      } catch (error) {
+        console.error("Update assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to update assessment" 
+        });
+      }
+    });
+
+    // Delete assessment
+    app.delete("/api/teacher/assessment/:assessmentId", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const teacherEmail = req.decoded.email;
+
+        // Verify ownership
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          teacherEmail: teacherEmail
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+
+        // Delete assessment
+        await AssessmentCollection.deleteOne({ _id: new ObjectId(assessmentId) });
+
+        // Delete all submissions for this assessment
+        await SubmissionsCollection.deleteMany({ 
+          assessmentId: new ObjectId(assessmentId) 
+        });
+
+        res.send({ 
+          success: true, 
+          message: "Assessment deleted successfully" 
+        });
+      } catch (error) {
+        console.error("Delete assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to delete assessment" 
+        });
+      }
+    });
+
+    // Publish assessment
+    app.put("/api/teacher/assessment/:assessmentId/publish", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const teacherEmail = req.decoded.email;
+
+        const result = await AssessmentCollection.updateOne(
+          { 
+            _id: new ObjectId(assessmentId),
+            teacherEmail: teacherEmail
+          },
+          { 
+            $set: { 
+              status: "published",
+              updatedAt: new Date()
+            } 
+          }
+        );
+
+        if (result.modifiedCount === 1) {
+          res.send({ 
+            success: true, 
+            message: "Assessment published successfully" 
+          });
+        } else {
+          res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+      } catch (error) {
+        console.error("Publish assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to publish assessment" 
+        });
+      }
+    });
+
+    // Close assessment
+    app.put("/api/teacher/assessment/:assessmentId/close", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const teacherEmail = req.decoded.email;
+
+        const result = await AssessmentCollection.updateOne(
+          { 
+            _id: new ObjectId(assessmentId),
+            teacherEmail: teacherEmail
+          },
+          { 
+            $set: { 
+              status: "closed",
+              updatedAt: new Date()
+            } 
+          }
+        );
+
+        if (result.modifiedCount === 1) {
+          res.send({ 
+            success: true, 
+            message: "Assessment closed successfully" 
+          });
+        } else {
+          res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+      } catch (error) {
+        console.error("Close assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to close assessment" 
+        });
+      }
+    });
+
+    // Get all submissions for an assessment
+    app.get("/api/teacher/assessment/:assessmentId/submissions", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const teacherEmail = req.decoded.email;
+
+        // Verify ownership
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          teacherEmail: teacherEmail
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+
+        const submissions = await SubmissionsCollection.find({
+          assessmentId: new ObjectId(assessmentId)
+        }).toArray();
+
+        res.send({ 
+          success: true, 
+          data: submissions 
+        });
+      } catch (error) {
+        console.error("Get submissions error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get submissions" 
+        });
+      }
+    });
+
+    // Get single submission
+    app.get("/api/teacher/assessment/:assessmentId/submission/:submissionId", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const { assessmentId, submissionId } = req.params;
+        const teacherEmail = req.decoded.email;
+
+        // Verify ownership
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          teacherEmail: teacherEmail
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+
+        const submission = await SubmissionsCollection.findOne({
+          _id: new ObjectId(submissionId),
+          assessmentId: new ObjectId(assessmentId)
+        });
+
+        if (!submission) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Submission not found" 
+          });
+        }
+
+        res.send({ 
+          success: true, 
+          data: submission 
+        });
+      } catch (error) {
+        console.error("Get submission error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get submission" 
+        });
+      }
+    });
+
+    // Grade submission
+    app.put("/api/teacher/grade-submission", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const { submissionId, grade, feedback } = req.body;
+        const teacherEmail = req.decoded.email;
+
+        // Find submission
+        const submission = await SubmissionsCollection.findOne({
+          _id: new ObjectId(submissionId)
+        });
+
+        if (!submission) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Submission not found" 
+          });
+        }
+
+        // Verify teacher owns the assessment
+        const assessment = await AssessmentCollection.findOne({
+          _id: submission.assessmentId,
+          teacherEmail: teacherEmail
+        });
+
+        if (!assessment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // Update submission
+        const result = await SubmissionsCollection.updateOne(
+          { _id: new ObjectId(submissionId) },
+          { 
+            $set: { 
+              grade: grade,
+              feedback: feedback || "",
+              gradedBy: req.decoded.email,
+              gradedAt: new Date(),
+              status: "graded",
+              updatedAt: new Date()
+            } 
+          }
+        );
+
+        if (result.modifiedCount === 1) {
+          res.send({ 
+            success: true, 
+            message: "Submission graded successfully" 
+          });
+        } else {
+          res.status(400).send({ 
+            success: false, 
+            message: "Failed to grade submission" 
+          });
+        }
+      } catch (error) {
+        console.error("Grade submission error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to grade submission" 
+        });
+      }
+    });
+
+    // Get assessment statistics for a class
+    app.get("/api/teacher/class/:classId/assessment-statistics", verifyToken, verifyTeacher, async (req, res) => {
+      try {
+        const classId = req.params.classId;
+        const teacherEmail = req.decoded.email;
+
+        // Verify ownership
+        const classData = await ClassesCollection.findOne({
+          _id: new ObjectId(classId),
+          email: teacherEmail
+        });
+
+        if (!classData) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // Get all assessments for the class
+        const assessments = await AssessmentCollection.find({
+          classId: new ObjectId(classId)
+        }).toArray();
+
+        // Get statistics for each assessment
+        const statistics = await Promise.all(
+          assessments.map(async (assessment) => {
+            const totalSubmissions = await SubmissionsCollection.countDocuments({
+              assessmentId: assessment._id
+            });
+
+            const gradedSubmissions = await SubmissionsCollection.countDocuments({
+              assessmentId: assessment._id,
+              status: "graded"
+            });
+
+            const submissions = await SubmissionsCollection.find({
+              assessmentId: assessment._id,
+              status: "graded"
+            }).toArray();
+
+            const averageGrade = submissions.length > 0
+              ? submissions.reduce((sum, sub) => sum + (sub.grade || 0), 0) / submissions.length
+              : 0;
+
+            return {
+              assessmentId: assessment._id,
+              assessmentTitle: assessment.title,
+              assessmentType: assessment.type,
+              totalSubmissions,
+              gradedSubmissions,
+              pendingGrading: totalSubmissions - gradedSubmissions,
+              averageGrade: Math.round(averageGrade * 100) / 100
+            };
+          })
+        );
+
+        res.send({ 
+          success: true, 
+          data: statistics 
+        });
+      } catch (error) {
+        console.error("Get statistics error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get statistics" 
+        });
+      }
+    });
+
+    // ==================== STUDENT ASSESSMENT ROUTES ====================
+
+    // Get all assessments for enrolled class
+    app.get("/api/student/class/:classId/assessments", verifyToken, async (req, res) => {
+      try {
+        const classId = req.params.classId;
+        const studentEmail = req.decoded.email;
+
+        // Verify enrollment
+        const enrollment = await EnrollCollection.findOne({
+          courseId: new ObjectId(classId),
+          studentEmail: studentEmail
+        });
+
+        if (!enrollment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "You are not enrolled in this class" 
+          });
+        }
+
+        // Get published assessments only
+        const assessments = await AssessmentCollection.find({
+          classId: new ObjectId(classId),
+          status: "published"
+        }).toArray();
+
+        // Get student's submissions for each assessment
+        const assessmentsWithSubmissions = await Promise.all(
+          assessments.map(async (assessment) => {
+            const submissions = await SubmissionsCollection.find({
+              assessmentId: assessment._id,
+              studentEmail: studentEmail
+            }).toArray();
+
+            return {
+              ...assessment,
+              mySubmissions: submissions,
+              submissionCount: submissions.length
+            };
+          })
+        );
+
+        res.send({ 
+          success: true, 
+          data: assessmentsWithSubmissions 
+        });
+      } catch (error) {
+        console.error("Get student assessments error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get assessments" 
+        });
+      }
+    });
+
+    // Get assessment details
+    app.get("/api/student/assessment/:assessmentId", verifyToken, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const studentEmail = req.decoded.email;
+
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          status: "published"
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assessment not found" 
+          });
+        }
+
+        // Verify enrollment
+        const enrollment = await EnrollCollection.findOne({
+          courseId: assessment.classId,
+          studentEmail: studentEmail
+        });
+
+        if (!enrollment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // For quizzes, don't send correct answers
+        if (assessment.type === "quiz" && assessment.content.questions) {
+          assessment.content.questions = assessment.content.questions.map(q => ({
+            _id: q._id,
+            question: q.question,
+            type: q.type,
+            options: q.options,
+            points: q.points
+            // correctAnswer and explanation removed
+          }));
+        }
+
+        res.send({ 
+          success: true, 
+          data: assessment 
+        });
+      } catch (error) {
+        console.error("Get assessment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get assessment" 
+        });
+      }
+    });
+
+    // Get student's own submissions for an assessment
+    app.get("/api/student/assessment/:assessmentId/my-submissions", verifyToken, async (req, res) => {
+      try {
+        const assessmentId = req.params.assessmentId;
+        const studentEmail = req.decoded.email;
+
+        const submissions = await SubmissionsCollection.find({
+          assessmentId: new ObjectId(assessmentId),
+          studentEmail: studentEmail
+        }).toArray();
+
+        res.send({ 
+          success: true, 
+          data: submissions 
+        });
+      } catch (error) {
+        console.error("Get my submissions error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get submissions" 
+        });
+      }
+    });
+
+    // Submit assignment (with file upload)
+    app.post("/api/student/submit-assignment", verifyToken, upload.single('file'), async (req, res) => {
+      try {
+        const { assessmentId, submissionText } = req.body;
+        const studentEmail = req.decoded.email;
+
+        // Get assessment
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          type: "assignment",
+          status: "published"
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Assignment not found" 
+          });
+        }
+
+        // Verify enrollment
+        const enrollment = await EnrollCollection.findOne({
+          courseId: assessment.classId,
+          studentEmail: studentEmail
+        });
+
+        if (!enrollment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // Get student info
+        const student = await UserCollection.findOne({ email: studentEmail });
+
+        // Check if late
+        const isLate = new Date() > new Date(assessment.dueDate);
+        if (isLate && !assessment.allowLateSubmission) {
+          return res.status(400).send({ 
+            success: false, 
+            message: "Late submissions are not allowed" 
+          });
+        }
+
+        // Create submission
+        const submission = {
+          assessmentId: new ObjectId(assessmentId),
+          studentId: student._id,
+          studentEmail: studentEmail,
+          studentName: student.fullName || student.name,
+          classId: assessment.classId,
+          submissionType: "assignment",
+          submissionText: submissionText || "",
+          fileUrl: req.file ? `/uploads/submissions/${req.file.filename}` : null,
+          fileName: req.file ? req.file.originalname : null,
+          fileType: req.file ? req.file.mimetype : null,
+          fileSize: req.file ? req.file.size : null,
+          submittedAt: new Date(),
+          attemptNumber: 1,
+          isLate: isLate,
+          status: "submitted",
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const result = await SubmissionsCollection.insertOne(submission);
+
+        res.status(201).send({ 
+          success: true, 
+          message: "Assignment submitted successfully",
+          submissionId: result.insertedId,
+          data: submission
+        });
+      } catch (error) {
+        console.error("Submit assignment error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: error.message || "Failed to submit assignment" 
+        });
+      }
+    });
+
+    // Submit quiz (with auto-grading)
+    app.post("/api/student/submit-quiz", verifyToken, async (req, res) => {
+      try {
+        const { assessmentId, answers } = req.body;
+        const studentEmail = req.decoded.email;
+
+        // Get assessment
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          type: "quiz",
+          status: "published"
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Quiz not found" 
+          });
+        }
+
+        // Verify enrollment
+        const enrollment = await EnrollCollection.findOne({
+          courseId: assessment.classId,
+          studentEmail: studentEmail
+        });
+
+        if (!enrollment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // Check attempt limit
+        const previousAttempts = await SubmissionsCollection.countDocuments({
+          assessmentId: new ObjectId(assessmentId),
+          studentEmail: studentEmail
+        });
+
+        if (previousAttempts >= assessment.attempts) {
+          return res.status(400).send({ 
+            success: false, 
+            message: `Maximum attempts (${assessment.attempts}) reached` 
+          });
+        }
+
+        // Get student info
+        const student = await UserCollection.findOne({ email: studentEmail });
+
+        // Auto-grade quiz
+        let totalScore = 0;
+        const gradedAnswers = answers.map(answer => {
+          const question = assessment.content.questions.find(
+            q => q._id.toString() === answer.questionId.toString()
+          );
+
+          if (!question) {
+            return {
+              questionId: answer.questionId,
+              answer: answer.answer,
+              isCorrect: false,
+              pointsEarned: 0
+            };
+          }
+
+          let isCorrect = false;
+          
+          // Check answer based on question type
+          if (question.type === "mcq" || question.type === "true-false") {
+            isCorrect = answer.answer === question.correctAnswer;
+          } else if (question.type === "short-answer") {
+            // Case-insensitive comparison for short answers
+            isCorrect = answer.answer.toLowerCase().trim() === 
+                       question.correctAnswer.toLowerCase().trim();
+          }
+
+          const pointsEarned = isCorrect ? question.points : 0;
+          totalScore += pointsEarned;
+
+          return {
+            questionId: answer.questionId,
+            answer: answer.answer,
+            isCorrect: isCorrect,
+            pointsEarned: pointsEarned
+          };
+        });
+
+        // Check if late
+        const isLate = new Date() > new Date(assessment.dueDate);
+
+        // Create submission
+        const submission = {
+          assessmentId: new ObjectId(assessmentId),
+          studentId: student._id,
+          studentEmail: studentEmail,
+          studentName: student.fullName || student.name,
+          classId: assessment.classId,
+          submissionType: "quiz",
+          answers: gradedAnswers,
+          quizScore: totalScore,
+          submittedAt: new Date(),
+          attemptNumber: previousAttempts + 1,
+          isLate: isLate,
+          grade: totalScore,
+          status: "graded",
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const result = await SubmissionsCollection.insertOne(submission);
+
+        res.status(201).send({ 
+          success: true, 
+          message: "Quiz submitted successfully",
+          submissionId: result.insertedId,
+          score: totalScore,
+          totalPoints: assessment.totalPoints,
+          passed: totalScore >= assessment.passingScore,
+          data: submission
+        });
+      } catch (error) {
+        console.error("Submit quiz error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to submit quiz" 
+        });
+      }
+    });
+
+    // Submit discussion post
+    app.post("/api/student/submit-discussion", verifyToken, async (req, res) => {
+      try {
+        const { assessmentId, discussionPost } = req.body;
+        const studentEmail = req.decoded.email;
+
+        // Get assessment
+        const assessment = await AssessmentCollection.findOne({
+          _id: new ObjectId(assessmentId),
+          type: "discussion",
+          status: "published"
+        });
+
+        if (!assessment) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Discussion not found" 
+          });
+        }
+
+        // Verify enrollment
+        const enrollment = await EnrollCollection.findOne({
+          courseId: assessment.classId,
+          studentEmail: studentEmail
+        });
+
+        if (!enrollment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // Check if already submitted
+        const existingSubmission = await SubmissionsCollection.findOne({
+          assessmentId: new ObjectId(assessmentId),
+          studentEmail: studentEmail
+        });
+
+        if (existingSubmission) {
+          return res.status(400).send({ 
+            success: false, 
+            message: "You have already submitted to this discussion" 
+          });
+        }
+
+        // Get student info
+        const student = await UserCollection.findOne({ email: studentEmail });
+
+        // Check if late
+        const isLate = new Date() > new Date(assessment.dueDate);
+
+        // Create submission
+        const submission = {
+          assessmentId: new ObjectId(assessmentId),
+          studentId: student._id,
+          studentEmail: studentEmail,
+          studentName: student.fullName || student.name,
+          classId: assessment.classId,
+          submissionType: "discussion",
+          discussionPost: discussionPost,
+          responses: [],
+          submittedAt: new Date(),
+          attemptNumber: 1,
+          isLate: isLate,
+          status: "submitted",
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const result = await SubmissionsCollection.insertOne(submission);
+
+        res.status(201).send({ 
+          success: true, 
+          message: "Discussion post submitted successfully",
+          submissionId: result.insertedId,
+          data: submission
+        });
+      } catch (error) {
+        console.error("Submit discussion error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to submit discussion" 
+        });
+      }
+    });
+
+    // Add peer response to discussion
+    app.post("/api/student/discussion/:submissionId/respond", verifyToken, async (req, res) => {
+      try {
+        const submissionId = req.params.submissionId;
+        const { responseText, isAnonymous } = req.body;
+        const studentEmail = req.decoded.email;
+
+        // Get submission
+        const submission = await SubmissionsCollection.findOne({
+          _id: new ObjectId(submissionId),
+          submissionType: "discussion"
+        });
+
+        if (!submission) {
+          return res.status(404).send({ 
+            success: false, 
+            message: "Discussion post not found" 
+          });
+        }
+
+        // Verify enrollment
+        const enrollment = await EnrollCollection.findOne({
+          courseId: submission.classId,
+          studentEmail: studentEmail
+        });
+
+        if (!enrollment) {
+          return res.status(403).send({ 
+            success: false, 
+            message: "Access denied" 
+          });
+        }
+
+        // Add response
+        const response = {
+          _id: new ObjectId(),
+          responseText: responseText,
+          respondedBy: isAnonymous ? "Anonymous" : studentEmail,
+          respondedAt: new Date(),
+          isAnonymous: isAnonymous || false
+        };
+
+        const result = await SubmissionsCollection.updateOne(
+          { _id: new ObjectId(submissionId) },
+          { 
+            $push: { responses: response },
+            $set: { updatedAt: new Date() }
+          }
+        );
+
+        if (result.modifiedCount === 1) {
+          res.send({ 
+            success: true, 
+            message: "Response added successfully",
+            data: response
+          });
+        } else {
+          res.status(400).send({ 
+            success: false, 
+            message: "Failed to add response" 
+          });
+        }
+      } catch (error) {
+        console.error("Add response error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to add response" 
+        });
+      }
+    });
+
+    // Get all assessments across enrolled classes (student dashboard)
+    app.get("/api/student/dashboard/assessments", verifyToken, async (req, res) => {
+      try {
+        const studentEmail = req.decoded.email;
+
+        // Get all enrollments
+        const enrollments = await EnrollCollection.find({
+          studentEmail: studentEmail
+        }).toArray();
+
+        const classIds = enrollments.map(e => e.courseId);
+
+        // Get all published assessments for enrolled classes
+        const assessments = await AssessmentCollection.find({
+          classId: { $in: classIds },
+          status: "published"
+        }).toArray();
+
+        // Get class details and submission status for each assessment
+        const assessmentsWithDetails = await Promise.all(
+          assessments.map(async (assessment) => {
+            const classData = await ClassesCollection.findOne({
+              _id: assessment.classId
+            });
+
+            const submissions = await SubmissionsCollection.find({
+              assessmentId: assessment._id,
+              studentEmail: studentEmail
+            }).toArray();
+
+            return {
+              ...assessment,
+              classTitle: classData?.title,
+              classImage: classData?.image,
+              mySubmissions: submissions,
+              submissionCount: submissions.length,
+              isCompleted: submissions.length > 0
+            };
+          })
+        );
+
+        res.send({ 
+          success: true, 
+          data: assessmentsWithDetails 
+        });
+      } catch (error) {
+        console.error("Get dashboard assessments error:", error);
+        res.status(500).send({ 
+          success: false, 
+          message: "Failed to get assessments" 
+        });
       }
     });
 

@@ -128,7 +128,7 @@ const MyEnrollCard = ({enrollCard}) => {
           </div>
 
           {/* Action Button */}
-          <NavLink to={`/dashboard/enrollclassdetails/${_id}`}>
+          <NavLink to={`/dashboard/course/${courseId}/assessments`}>
             <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg transition-all duration-300 transform hover:scale-105 group">
               <FaPlay className="text-sm" />
               <span>Continue Course</span>
