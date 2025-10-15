@@ -4,6 +4,12 @@
 
 <div align="center">
 
+🌐 **[Live Application](https://escape-the-matrix-id9n.vercel.app/)** | 📂 **[Repository](https://github.com/niiazmorshed/Escape-The-Matrix)** | 👤 **[Developer](https://github.com/niiazmorshed)**
+
+</div>
+
+<div align="center">
+
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -72,24 +78,26 @@
 
 ## 📋 Table of Contents
 
-- [Overview](#-overview)
+- [About](#-about)
 - [Key Features](#-key-features)
-- [Technology Stack](#-technology-stack)
 - [User Roles & Workflows](#-user-roles--workflows)
 - [Assessment System](#-assessment-system)
 - [Project Structure](#-project-structure)
 - [Installation & Setup](#-installation--setup)
 - [Environment Variables](#-environment-variables)
-- [API Documentation](#-api-documentation)
-- [Deployment](#-deployment)
-- [Documentation Files](#-documentation-files)
 - [Contributing](#-contributing)
 
 ---
 
-## 🌟 Overview
+## 🌟 About
 
-**Escape The Matrix** is a modern, feature-rich Learning Management System designed to facilitate online education with a seamless experience for administrators, teachers, and students. The platform supports course creation, enrollment management, and a comprehensive assessment system with automatic grading capabilities.
+**Escape The Matrix** is a modern Learning Management System built with the MERN stack (MongoDB, Express.js, React, Node.js) that revolutionizes online education. The platform provides a complete ecosystem where administrators manage the system, teachers create and deliver courses, and students engage in interactive learning through assignments, quizzes, and discussions.
+
+### ⚡ Quick Summary
+
+A production-ready LMS featuring role-based authentication (Admin/Teacher/Student), comprehensive course management, automated quiz grading, file-based assignment submissions, and real-time progress tracking. Built with React 18, Vite, Tailwind CSS, Firebase Authentication, and deployed on Vercel for optimal performance.
+
+**🔗 Live Site:** [https://escape-the-matrix-id9n.vercel.app/](https://escape-the-matrix-id9n.vercel.app/)
 
 ### 🎯 Core Capabilities
 
@@ -190,51 +198,6 @@
   - Filter by type (assignments, quizzes, discussions)
   - Sort by due date or status
   - Statistics cards showing total, completed, and pending work
-
----
-
-## 🛠️ Technology Stack
-
-### Frontend
-
-| Technology           | Purpose                                         | Version |
-| -------------------- | ----------------------------------------------- | ------- |
-| **React**            | UI library with hooks and functional components | 18.2.0  |
-| **Vite**             | Fast build tool and development server          | 5.2.0   |
-| **React Router DOM** | Client-side routing and navigation              | 6.23.1  |
-| **Tailwind CSS**     | Utility-first CSS framework                     | 3.4.3   |
-| **DaisyUI**          | Component library for Tailwind                  | 4.11.1  |
-| **TanStack Query**   | Server state management and caching             | 5.40.0  |
-| **Axios**            | HTTP client for API requests                    | 1.7.2   |
-| **React Hook Form**  | Form handling and validation                    | 7.54.2  |
-| **React Hot Toast**  | Toast notifications                             | 2.4.1   |
-| **SweetAlert2**      | Beautiful alert dialogs                         | 11.11.0 |
-| **React Icons**      | Icon library (Fa, Md, Bs, etc.)                 | 5.2.1   |
-| **Swiper.js**        | Touch slider for carousels                      | 11.1.4  |
-| **Lottie React**     | Animation library                               | 2.4.0   |
-| **Animate.css**      | CSS animation library                           | 4.1.1   |
-| **Stripe**           | Payment processing                              | 3.4.1   |
-
-### Backend
-
-| Technology     | Purpose                         | Version    |
-| -------------- | ------------------------------- | ---------- |
-| **Node.js**    | JavaScript runtime              | Latest LTS |
-| **Express.js** | Web application framework       | 4.19.2     |
-| **MongoDB**    | NoSQL database                  | 6.7.0      |
-| **Multer**     | File upload middleware          | 2.0.2      |
-| **JWT**        | Authentication tokens           | 9.0.2      |
-| **CORS**       | Cross-origin resource sharing   | 2.8.5      |
-| **dotenv**     | Environment variable management | 16.4.5     |
-
-### Authentication & Hosting
-
-- **Firebase Authentication**: Google, GitHub, and email/password login
-- **JWT Tokens**: Secure API authentication with role-based access
-- **Firebase Hosting**: Frontend deployment (optional)
-- **Vercel**: Backend deployment support
-
----
 
 ## 👥 User Roles & Workflows
 
@@ -554,148 +517,6 @@ npm run dev
 | `PORT`                | Server port         | `5000`                   |
 | `DEFAULT_ADMIN_EMAIL` | Default admin email | `admin@example.com`      |
 
----
-
-## 📡 API Documentation
-
-### Base URL
-
-```
-http://localhost:5000
-```
-
-### Authentication
-
-All protected endpoints require a JWT token:
-
-```bash
-# Get JWT Token
-POST /jwt
-Body: { "email": "user@example.com" }
-
-# Use token in requests
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-### API Endpoint Categories
-
-#### 🔐 Authentication & Users
-
-| Endpoint       | Method | Description           |
-| -------------- | ------ | --------------------- |
-| `/jwt`         | POST   | Generate JWT token    |
-| `/allusers`    | GET    | Get all users (Admin) |
-| `/user/:email` | GET    | Get user by email     |
-| `/users`       | POST   | Create new user       |
-
-#### 📚 Courses
-
-| Endpoint            | Method | Description           |
-| ------------------- | ------ | --------------------- |
-| `/approved-classes` | GET    | Get approved courses  |
-| `/classes/:email`   | GET    | Get teacher's courses |
-| `/add-classes`      | POST   | Create new course     |
-| `/update-class/:id` | PUT    | Update course         |
-| `/delete-class/:id` | DELETE | Delete course         |
-
-#### 🎓 Enrollment
-
-| Endpoint                      | Method | Description               |
-| ----------------------------- | ------ | ------------------------- |
-| `/enroll`                     | POST   | Enroll in course          |
-| `/enrolledclasses/:email`     | GET    | Get student's enrollments |
-| `/class-enrollments/:classId` | GET    | Get course enrollments    |
-
-#### 📝 Assessments (Teacher)
-
-| Endpoint                                       | Method | Description           |
-| ---------------------------------------------- | ------ | --------------------- |
-| `/api/teacher/class/:classId/assessment`       | POST   | Create assessment     |
-| `/api/teacher/class/:classId/assessments`      | GET    | Get class assessments |
-| `/api/teacher/assessment/:id`                  | GET    | Get single assessment |
-| `/api/teacher/assessment/:id`                  | PUT    | Update assessment     |
-| `/api/teacher/assessment/:id`                  | DELETE | Delete assessment     |
-| `/api/teacher/assessment/:id/publish`          | PUT    | Publish assessment    |
-| `/api/teacher/assessment/:id/close`            | PUT    | Close assessment      |
-| `/api/teacher/assessment/:id/submissions`      | GET    | Get submissions       |
-| `/api/teacher/grade-submission`                | PUT    | Grade submission      |
-| `/api/teacher/class/:id/assessment-statistics` | GET    | Get statistics        |
-
-#### 🎯 Assessments (Student)
-
-| Endpoint                                     | Method | Description                   |
-| -------------------------------------------- | ------ | ----------------------------- |
-| `/api/student/class/:classId/assessments`    | GET    | Get class assessments         |
-| `/api/student/assessment/:id`                | GET    | Get assessment details        |
-| `/api/student/assessment/:id/my-submissions` | GET    | Get my submissions            |
-| `/api/student/submit-assignment`             | POST   | Submit assignment (with file) |
-| `/api/student/submit-quiz`                   | POST   | Submit quiz (auto-graded)     |
-| `/api/student/submit-discussion`             | POST   | Submit discussion post        |
-| `/api/student/discussion/:id/respond`        | POST   | Add peer response             |
-| `/api/student/dashboard/assessments`         | GET    | Get all my assessments        |
-
-#### 👨‍🏫 Teacher Requests
-
-| Endpoint               | Method | Description              |
-| ---------------------- | ------ | ------------------------ |
-| `/teacher-request`     | POST   | Submit teacher request   |
-| `/all-request`         | GET    | Get all requests (Admin) |
-| `/approve-teacher/:id` | PUT    | Approve teacher request  |
-| `/deny-teacher/:id`    | PUT    | Reject teacher request   |
-
-### 📥 File Upload Example
-
-```javascript
-const formData = new FormData();
-formData.append("assessmentId", assessmentId);
-formData.append("submissionText", "My submission text");
-formData.append("file", fileObject);
-
-const response = await axios.post(
-  "http://localhost:5000/api/student/submit-assignment",
-  formData,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  }
-);
-```
-
-### 📤 Response Format
-
-**Success Response:**
-
-```json
-{
-  "success": true,
-  "message": "Operation successful",
-  "data": {}
-}
-```
-
-**Error Response:**
-
-```json
-{
-  "success": false,
-  "message": "Error description"
-}
-```
-
-**HTTP Status Codes:**
-
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request
-- `401` - Unauthorized
-- `403` - Forbidden
-- `404` - Not Found
-- `500` - Server Error
-
----
-
 ## 🗄️ Database Collections
 
 ### MongoDB Collections in `EscapeTheMatrix` Database
@@ -729,133 +550,6 @@ const response = await axios.post(
    - Stores student submissions
    - Fields: student info, file URL, answers, grade, feedback
 
----
-
-## 🎨 Design System
-
-### Color Palette
-
-- **Primary**: Deep Blue (`#003366`)
-- **Secondary**: Darker Blue (`#004080`)
-- **Accent**: Light Blue (`#0066cc`)
-- **Success**: Green (`#10B981`)
-- **Warning**: Yellow (`#F59E0B`)
-- **Error**: Red (`#EF4444`)
-
-### Typography
-
-- **Font Family**: Nunito (Google Fonts)
-- **Weights**: 200-1000 (Variable)
-
-### UI Components
-
-- **Cards**: Rounded corners with subtle shadows
-- **Buttons**: Gradient backgrounds with hover effects
-- **Forms**: Clean inputs with validation states
-- **Modals**: Centered with backdrop blur
-- **Toasts**: react-hot-toast with custom styling
-
-### Responsive Breakpoints
-
-- **Mobile**: < 640px
-- **Tablet**: 640px - 1024px
-- **Desktop**: > 1024px
-
----
-
-## 🚀 Deployment
-
-### Frontend Deployment (Vercel/Netlify)
-
-```bash
-# Build for production
-cd Escape_the_Matrix_Client
-npm run build
-
-# The dist/ folder is ready for deployment
-# Deploy to Vercel, Netlify, or Firebase Hosting
-```
-
-**Vercel Deployment:**
-
-```bash
-npm install -g vercel
-vercel --prod
-```
-
-**Firebase Hosting:**
-
-```bash
-npm install -g firebase-tools
-firebase login
-firebase init hosting
-firebase deploy
-```
-
-### Backend Deployment (Railway/Render/Vercel)
-
-```bash
-cd Escape_the_Matrix_Server
-
-# Ensure environment variables are set on hosting platform
-# Deploy using platform CLI or Git integration
-```
-
-**Vercel Deployment:**
-
-```bash
-vercel --prod
-```
-
-**Environment Variables to Set:**
-
-- `DB_USER`
-- `DB_PASSWORD`
-- `ACCESS_TOKEN_SECRET`
-- `PORT`
-
-### Post-Deployment Checklist
-
-- [ ] Update `VITE_API_URL` in frontend `.env` to production backend URL
-- [ ] Set CORS origin in backend to production frontend URL
-- [ ] Ensure MongoDB Atlas allows connections from hosting IP
-- [ ] Create `uploads/` directories with proper permissions
-- [ ] Test all authentication flows
-- [ ] Test file upload functionality
-- [ ] Verify JWT token generation and validation
-- [ ] Test all user roles (admin, teacher, student)
-
----
-
-## 📚 Documentation Files
-
-Comprehensive documentation is available in both client and server directories:
-
-### Frontend Documentation (`Escape_the_Matrix_Client/`)
-
-- `ASSESSMENT_IMPLEMENTATION_SUMMARY.md` - Student assessment system overview
-- `ASSESSMENT_CARDS_POLISH.md` - UI/UX improvements
-- `NAVIGATION_UPDATE_SUMMARY.md` - Navigation structure changes
-- `TEACHER_GRADING_SYSTEM.md` - Teacher grading interface guide
-- `PREVENT_TEACHER_ENROLLMENT.md` - Role-based access control
-- `UI_CLEANUP_SUMMARY.md` - UI refinements
-- `COURSE_SPECIFIC_ASSESSMENTS_FIX.md` - Assessment fixes
-
-### Backend Documentation (`Escape_the_Matrix_Server/`)
-
-- `ASSESSMENT_API_DOCUMENTATION.md` - Complete API reference (1000+ lines)
-- `ASSESSMENT_SYSTEM_README.md` - System overview
-- `ASSESSMENT_TESTING_GUIDE.md` - Testing instructions
-- `FRONTEND_ASSESSMENT_GUIDE.md` - Frontend integration guide
-- `SUBMISSIONS_COLLECTION_GUIDE.md` - Database schema details
-
-### Public Documentation
-
-- `public/FRONTEND_QUICK_SUMMARY.md` - Quick start guide
-- `public/FRONTEND_TEACHER_GRADING_GUIDE.md` - Teacher features
-
----
-
 ## 🔧 Development
 
 ### Run Linter
@@ -878,18 +572,6 @@ npm run build
 # Preview production build
 npm run preview
 ```
-
-### Directory Structure for New Features
-
-When adding new features:
-
-1. Create component in appropriate `Pages/` or `components/` directory
-2. Add custom hook in `Hooks/` if needed
-3. Update routes in `Routes/Routes.jsx`
-4. Add API endpoints in `server/index.js`
-5. Update documentation
-
----
 
 ## 🤝 Contributing
 
@@ -940,42 +622,6 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Issue: Can't connect to MongoDB**
-
-```
-Solution: Check DB_USER and DB_PASSWORD in .env
-Verify MongoDB Atlas allows connections from your IP
-```
-
-**Issue: File upload fails**
-
-```
-Solution: Ensure uploads/submissions/ directory exists
-Check file size (max 10MB)
-Verify file type (PDF, DOC, DOCX only)
-```
-
-**Issue: JWT token invalid**
-
-```
-Solution: Check ACCESS_TOKEN_SECRET in backend .env
-Ensure token is sent in Authorization header
-Verify token hasn't expired
-```
-
-**Issue: CORS errors**
-
-```
-Solution: Add your frontend URL to CORS origin in index.js
-Update both client origin URLs if needed
-```
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/niiazmorshed/Escape-The-Matrix/blob/main/LICENSE) file for details.
@@ -1016,35 +662,6 @@ For support, questions, or feature requests:
 
 ---
 
-## 🎯 Roadmap
-
-### Current Features ✅
-
-- Multi-role authentication (Admin, Teacher, Student)
-- Course creation and management
-- Assessment system (Assignments, Quizzes, Discussions)
-- Auto-grading for quizzes
-- File upload support
-- Teacher grading interface
-- Student dashboard
-- Responsive design with dark mode
-
-### Upcoming Features 🚀
-
-- Video lecture support
-- Real-time chat for courses
-- Certificate generation
-- Payment integration (Stripe)
-- Mobile app (React Native)
-- Email notifications
-- Advanced analytics dashboard
-- Plagiarism detection
-- Peer review system
-- Course prerequisites
-- Gradebook exports
-
----
-
 ## 🌟 Highlights
 
 - ✨ **Modern Tech Stack**: Built with latest React 18, Vite, and MongoDB
@@ -1053,7 +670,7 @@ For support, questions, or feature requests:
 - ⚡ **Fast**: Vite build tool for lightning-fast development
 - 📱 **Responsive**: Mobile-first approach works on all devices
 - 🎓 **Feature-Rich**: Complete LMS with assessments and grading
-- 🚀 **Production-Ready**: Deployed and tested system
+- 🚀 **Production-Ready**: Deployed and live at [escape-the-matrix-id9n.vercel.app](https://escape-the-matrix-id9n.vercel.app/)
 - 📚 **Well-Documented**: Comprehensive documentation (3000+ lines)
 
 ---
@@ -1068,8 +685,9 @@ Built using the MERN Stack
 
 ---
 
-### 🌐 Connect
+### 🌐 Connect & Explore
 
+[![Live Demo](https://img.shields.io/badge/Live-View_Application-success?style=for-the-badge&logo=vercel)](https://escape-the-matrix-id9n.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-niiazmorshed-181717?style=for-the-badge&logo=github)](https://github.com/niiazmorshed)
 [![Repository](https://img.shields.io/badge/Repository-Escape_The_Matrix-blue?style=for-the-badge&logo=github)](https://github.com/niiazmorshed/Escape-The-Matrix)
 
