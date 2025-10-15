@@ -3,74 +3,22 @@ const cors = require("cors");
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
 const app = express();
 const port = process.env.PORT || 5000;
 // Default super admin email - immutable
 const DEFAULT_ADMIN_EMAIL = "niazmorshedrafi@gmail.com";
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Multer configuration for Cloudinary (memory storage)
-const storage = multer.memoryStorage();
-
-// File filter for allowed types
-const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-  ];
-  
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only PDF, DOC, and DOCX files are allowed"), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-});
-
-// Helper function to upload file to Cloudinary
-const uploadToCloudinary = (fileBuffer, folder, fileName) => {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: folder,
-        public_id: fileName,
-        resource_type: "auto",
-        format: "pdf" // Default format, will auto-detect
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      }
-    );
-    uploadStream.end(fileBuffer);
-  });
-};
-
 // Middleware
 app.use(
   cors({
     origin: [
-      // "http://localhost:5173",
+      "http://localhost:5173",
       "https://escape-the-matrix-id9n.vercel.app",
+      "https://escape-the-matrix-id9n.vercel.app/",
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json());
@@ -1957,10 +1905,10 @@ async function run() {
       }
     });
 
-    // Submit assignment (with file upload to Cloudinary)
-    app.post("/api/student/submit-assignment", verifyToken, upload.single('file'), async (req, res) => {
+    // Submit assignment (text only - no file upload)
+    app.post("/api/student/submit-assignment", verifyToken, async (req, res) => {
       try {
-        const { assessmentId, submissionText } = req.body;
+        const { assessmentId, submissionText, fileUrl } = req.body;
         const studentEmail = req.decoded.email;
 
         // Get assessment
@@ -2002,18 +1950,7 @@ async function run() {
           });
         }
 
-        // Upload file to Cloudinary if file exists
-        let cloudinaryResult = null;
-        if (req.file) {
-          const fileName = `${studentEmail}_${assessmentId}_${Date.now()}`;
-          cloudinaryResult = await uploadToCloudinary(
-            req.file.buffer,
-            "escape-matrix/submissions",
-            fileName
-          );
-        }
-
-        // Create submission
+        // Create submission (text + optional external file URL)
         const submission = {
           assessmentId: new ObjectId(assessmentId),
           studentId: student._id,
@@ -2022,11 +1959,7 @@ async function run() {
           classId: assessment.classId,
           submissionType: "assignment",
           submissionText: submissionText || "",
-          fileUrl: cloudinaryResult ? cloudinaryResult.secure_url : null,
-          fileName: req.file ? req.file.originalname : null,
-          fileType: req.file ? req.file.mimetype : null,
-          fileSize: req.file ? req.file.size : null,
-          cloudinaryPublicId: cloudinaryResult ? cloudinaryResult.public_id : null,
+          fileUrl: fileUrl || null, // Can be an external URL (Google Drive, Dropbox, etc.)
           submittedAt: new Date(),
           attemptNumber: 1,
           isLate: isLate,
