@@ -298,7 +298,7 @@ const AssessmentDetail = () => {
                       File:
                     </p>
                     <a
-                      href={`http://localhost:5000${submission.fileUrl}`}
+                      href={`http://escape-the-matrix-sigma.vercel.app${submission.fileUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 dark:text-blue-400 hover:underline"

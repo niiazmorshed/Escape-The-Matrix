@@ -52,9 +52,8 @@ const upload = multer({
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      // "https://escape-the-matrix-9de78.web.app",
-      // "https://escape-the-matrix-9de78.firebaseapp.com/",
+      // "http://localhost:5173",
+      "https://escape-the-matrix-id9n.vercel.app",
     ],
   })
 );

@@ -98,7 +98,7 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`http://localhost:5000/get-enrolled-details/${params.id}`),
+          fetch(`http://escape-the-matrix-sigma.vercel.app/get-enrolled-details/${params.id}`),
       },
       {
         path: "userprofile",
@@ -149,7 +149,7 @@ const router = createBrowserRouter([
             <AllUsers></AllUsers>
           </AdminRoute>
         ),
-        loader: () => fetch("http://localhost:5000/allusers"),
+        loader: () => fetch("http://escape-the-matrix-sigma.vercel.app/allusers"),
       },
       {
         path: "teacherrequest",
