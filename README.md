@@ -4,16 +4,6 @@
 
 <div align="center">
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Escape_The_Matrix-181717?style=for-the-badge&logo=github)](https://github.com/niiazmorshed/Escape-The-Matrix)
-[![Author](https://img.shields.io/badge/Author-niiazmorshed-blue?style=for-the-badge&logo=github)](https://github.com/niiazmorshed)
-[![Stars](https://img.shields.io/github/stars/niiazmorshed/Escape-The-Matrix?style=for-the-badge)](https://github.com/niiazmorshed/Escape-The-Matrix/stargazers)
-[![Forks](https://img.shields.io/github/forks/niiazmorshed/Escape-The-Matrix?style=for-the-badge)](https://github.com/niiazmorshed/Escape-The-Matrix/network/members)
-[![Issues](https://img.shields.io/github/issues/niiazmorshed/Escape-The-Matrix?style=for-the-badge)](https://github.com/niiazmorshed/Escape-The-Matrix/issues)
-
-</div>
-
-<div align="center">
-
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
