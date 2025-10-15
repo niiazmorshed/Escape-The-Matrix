@@ -4,38 +4,31 @@ require("dotenv").config();
 var jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
 const app = express();
 const port = process.env.PORT || 5000;
 // Default super admin email - immutable
 const DEFAULT_ADMIN_EMAIL = "niazmorshedrafi@gmail.com";
 
-// Create uploads directory if it doesn't exist  
-const uploadsDir = path.join(__dirname, "uploads", "submissions");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const studentId = req.decoded?.email || "unknown";
-    const assessmentId = req.body.assessmentId || "assessment";
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    cb(null, `${studentId}_${assessmentId}_${timestamp}${ext}`);
-  },
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+// Multer configuration for Cloudinary (memory storage)
+const storage = multer.memoryStorage();
 
 // File filter for allowed types
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = [".pdf", ".doc", ".docx"];
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (allowedTypes.includes(ext)) {
+  const allowedMimeTypes = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ];
+  
+  if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new Error("Only PDF, DOC, and DOCX files are allowed"), false);
@@ -47,6 +40,28 @@ const upload = multer({
   fileFilter: fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
+
+// Helper function to upload file to Cloudinary
+const uploadToCloudinary = (fileBuffer, folder, fileName) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: folder,
+        public_id: fileName,
+        resource_type: "auto",
+        format: "pdf" // Default format, will auto-detect
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+    uploadStream.end(fileBuffer);
+  });
+};
 
 // Middleware
 app.use(
@@ -1942,7 +1957,7 @@ async function run() {
       }
     });
 
-    // Submit assignment (with file upload)
+    // Submit assignment (with file upload to Cloudinary)
     app.post("/api/student/submit-assignment", verifyToken, upload.single('file'), async (req, res) => {
       try {
         const { assessmentId, submissionText } = req.body;
@@ -1987,6 +2002,17 @@ async function run() {
           });
         }
 
+        // Upload file to Cloudinary if file exists
+        let cloudinaryResult = null;
+        if (req.file) {
+          const fileName = `${studentEmail}_${assessmentId}_${Date.now()}`;
+          cloudinaryResult = await uploadToCloudinary(
+            req.file.buffer,
+            "escape-matrix/submissions",
+            fileName
+          );
+        }
+
         // Create submission
         const submission = {
           assessmentId: new ObjectId(assessmentId),
@@ -1996,10 +2022,11 @@ async function run() {
           classId: assessment.classId,
           submissionType: "assignment",
           submissionText: submissionText || "",
-          fileUrl: req.file ? `/uploads/submissions/${req.file.filename}` : null,
+          fileUrl: cloudinaryResult ? cloudinaryResult.secure_url : null,
           fileName: req.file ? req.file.originalname : null,
           fileType: req.file ? req.file.mimetype : null,
           fileSize: req.file ? req.file.size : null,
+          cloudinaryPublicId: cloudinaryResult ? cloudinaryResult.public_id : null,
           submittedAt: new Date(),
           attemptNumber: 1,
           isLate: isLate,
