@@ -55,6 +55,7 @@ app.use(
       // "http://localhost:5173",
       "https://escape-the-matrix-id9n.vercel.app",
     ],
+    credentials: true,
   })
 );
 app.use(express.json());
