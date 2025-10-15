@@ -89,11 +89,14 @@ const Navbar = () => {
           <a>Home</a>
         </li>
       </NavLink>
-      <NavLink to="/teachonemx" className={linkClass}>
-        <li>
-          <a>Teach on EMX</a>
-        </li>
-      </NavLink>
+      {/* Hide "Teach on EMX" for teachers and admins since they already have teacher access */}
+      {!isTeacher && !isAdmin && (
+        <NavLink to="/teachonemx" className={linkClass}>
+          <li>
+            <a>Teach on EMX</a>
+          </li>
+        </NavLink>
+      )}
       <NavLink to="/allclasses" className={linkClass}>
         <li>
           <a>All Classes</a>

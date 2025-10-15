@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import useAdmin from "../../Hooks/useAdmin";
 import useAuth from "../../Hooks/useAuth";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useTeacher from "../../Hooks/useTeacher";
 
 const EnrollButton = ({ courseId, onEnrolled }) => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const [isTeacher] = useTeacher();
+  const [isAdmin] = useAdmin();
   const [checking, setChecking] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [posting, setPosting] = useState(false);
@@ -44,6 +48,15 @@ const EnrollButton = ({ courseId, onEnrolled }) => {
   const handleEnroll = async () => {
     if (!user?.email) {
       toast.error("Please login to enroll in courses");
+      return;
+    }
+
+    // Prevent teachers and admins from enrolling in courses
+    if (isTeacher || isAdmin) {
+      toast.error("Teachers and admins cannot enroll in courses as students", {
+        icon: "🚫",
+        duration: 4000,
+      });
       return;
     }
 
@@ -86,6 +99,30 @@ const EnrollButton = ({ courseId, onEnrolled }) => {
       <button className="btn btn-disabled" disabled>
         <span className="loading loading-spinner loading-sm"></span>
         Checking...
+      </button>
+    );
+  }
+
+  // Show different button for teachers/admins
+  if (isTeacher || isAdmin) {
+    return (
+      <button
+        className="btn bg-gray-400 hover:bg-gray-500 text-white border-none cursor-not-allowed"
+        onClick={handleEnroll}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+        {isTeacher ? "Teachers Can't Enroll" : "Admins Can't Enroll"}
       </button>
     );
   }
