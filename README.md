@@ -2,12 +2,96 @@
 
 > A comprehensive, full-stack Learning Management System (LMS) with role-based access control, course management, and a complete assessment system featuring assignments, quizzes, and discussions.
 
+<div align="center">
+
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Escape_The_Matrix-181717?style=for-the-badge&logo=github)](https://github.com/niiazmorshed/Escape-The-Matrix)
+[![Author](https://img.shields.io/badge/Author-niiazmorshed-blue?style=for-the-badge&logo=github)](https://github.com/niiazmorshed)
+[![Stars](https://img.shields.io/github/stars/niiazmorshed/Escape-The-Matrix?style=for-the-badge)](https://github.com/niiazmorshed/Escape-The-Matrix/stargazers)
+[![Forks](https://img.shields.io/github/forks/niiazmorshed/Escape-The-Matrix?style=for-the-badge)](https://github.com/niiazmorshed/Escape-The-Matrix/network/members)
+[![Issues](https://img.shields.io/github/issues/niiazmorshed/Escape-The-Matrix?style=for-the-badge)](https://github.com/niiazmorshed/Escape-The-Matrix/issues)
+
+</div>
+
+<div align="center">
+
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+
+</div>
+
+---
+
+## 🔗 Quick Links
+
+<div align="center">
+
+📂 **[Repository](https://github.com/niiazmorshed/Escape-The-Matrix)** |
+📝 **[Issues](https://github.com/niiazmorshed/Escape-The-Matrix/issues)** |
+🌟 **[Star this repo](https://github.com/niiazmorshed/Escape-The-Matrix)** |
+👤 **[Developer Profile](https://github.com/niiazmorshed)**
+
+</div>
+
+---
+
+## 🧪 Testing Credentials
+
+<div align="center">
+
+### 🎯 Quick Start - Use These Accounts to Test the Platform
+
+</div>
+
+| Role           | Email                       | Password | Access Level                   |
+| -------------- | --------------------------- | -------- | ------------------------------ |
+| 👨‍💼 **Admin**   | `niaz@gmail.com`            | `1234Aa` | Full platform access           |
+| 👨‍🏫 **Teacher** | `erwin.smith4733@gmail.com` | `1234Aa` | Course & assessment management |
+| 🎓 **Student** | `levi@gmail.com`            | `1234Aa` | Enroll & complete courses      |
+
+<details>
+<summary><b>📖 Click to see detailed capabilities for each role</b></summary>
+
+### 👨‍💼 Admin Account
+
+**Email:** `niaz@gmail.com` | **Password:** `1234Aa`
+
+**Capabilities:**
+
+- ✅ Approve/reject teacher requests
+- ✅ Approve/reject course submissions
+- ✅ View and manage all users
+- ✅ Access platform-wide analytics
+- ✅ Full system control
+
+### 👨‍🏫 Teacher Account
+
+**Email:** `erwin.smith4733@gmail.com` | **Password:** `1234Aa`
+
+**Capabilities:**
+
+- ✅ Create and manage courses
+- ✅ Create assessments (assignments, quizzes, discussions)
+- ✅ View student submissions
+- ✅ Grade student work
+- ✅ Track class analytics
+
+### 🎓 Student Account
+
+**Email:** `levi@gmail.com` | **Password:** `1234Aa`
+
+**Capabilities:**
+
+- ✅ Enroll in courses
+- ✅ View and complete assessments
+- ✅ Submit assignments and take quizzes
+- ✅ View grades and feedback
+- ✅ Track personal progress
+
+</details>
 
 ---
 
@@ -21,7 +105,6 @@
 - [Project Structure](#-project-structure)
 - [Installation & Setup](#-installation--setup)
 - [Environment Variables](#-environment-variables)
-- [Testing Credentials](#-testing-credentials)
 - [API Documentation](#-api-documentation)
 - [Deployment](#-deployment)
 - [Documentation Files](#-documentation-files)
@@ -377,8 +460,8 @@ Escape_the_Matrix/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd Escape_the_Matrix
+git clone https://github.com/niiazmorshed/Escape-The-Matrix.git
+cd Escape-The-Matrix
 ```
 
 ### Step 2: Frontend Setup
@@ -495,54 +578,6 @@ npm run dev
 | `ACCESS_TOKEN_SECRET` | JWT secret key      | `your_random_secret_key` |
 | `PORT`                | Server port         | `5000`                   |
 | `DEFAULT_ADMIN_EMAIL` | Default admin email | `admin@example.com`      |
-
----
-
-## 🧪 Testing Credentials
-
-Use these pre-configured accounts for testing different user roles:
-
-### 👨‍💼 Admin Account
-
-```
-Email: niaz@gmail.com
-Password: 1234Aa
-```
-
-**Capabilities**:
-
-- Approve/reject teacher requests
-- Approve/reject course submissions
-- View and manage all users
-- Access platform-wide analytics
-
-### 👨‍🏫 Teacher Account
-
-```
-Email: erwin.smith4733@gmail.com
-Password: 1234Aa
-```
-
-**Capabilities**:
-
-- Create and manage courses
-- Create assessments (assignments, quizzes, discussions)
-- View student submissions
-- Grade student work
-
-### 🎓 Student Account
-
-```
-Email: levi@gmail.com
-Password: 1234Aa
-```
-
-**Capabilities**:
-
-- Enroll in courses
-- View and complete assessments
-- Submit assignments and take quizzes
-- View grades and feedback
 
 ---
 
@@ -888,8 +923,8 @@ Contributions are welcome! Please follow these steps:
 1. **Fork the repository**
 
    ```bash
-   git clone <your-fork-url>
-   cd Escape_the_Matrix
+   git clone https://github.com/niiazmorshed/Escape-The-Matrix.git
+   cd Escape-The-Matrix
    ```
 
 2. **Create a feature branch**
@@ -968,13 +1003,17 @@ Update both client origin URLs if needed
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/niiazmorshed/Escape-The-Matrix/blob/main/LICENSE) file for details.
 
 ---
 
 ## 👥 Authors & Acknowledgments
 
-### Development Team
+### Developer
+
+**Niaz Morshed** - [@niiazmorshed](https://github.com/niiazmorshed)
+
+### Development Stack
 
 - **Full-Stack Development**: MERN Stack (MongoDB, Express, React, Node.js)
 - **UI/UX Design**: Modern, responsive design with Tailwind CSS
@@ -996,9 +1035,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support, questions, or feature requests:
 
-- **Create an Issue**: [GitHub Issues](https://github.com/your-repo/issues)
+- **Create an Issue**: [GitHub Issues](https://github.com/niiazmorshed/Escape-The-Matrix/issues)
 - **Documentation**: See documentation files in project directories
-- **Email**: Contact the development team
+- **GitHub**: [@niiazmorshed](https://github.com/niiazmorshed)
 
 ---
 
@@ -1048,7 +1087,20 @@ For support, questions, or feature requests:
 
 **Escape The Matrix** - Empowering education through technology 🎓✨
 
-Made with ❤️ using the MERN Stack
+Made with ❤️ by [Niaz Morshed](https://github.com/niiazmorshed)
+
+Built using the MERN Stack
+
+---
+
+### 🌐 Connect
+
+[![GitHub](https://img.shields.io/badge/GitHub-niiazmorshed-181717?style=for-the-badge&logo=github)](https://github.com/niiazmorshed)
+[![Repository](https://img.shields.io/badge/Repository-Escape_The_Matrix-blue?style=for-the-badge&logo=github)](https://github.com/niiazmorshed/Escape-The-Matrix)
+
+---
+
+⭐ **If you find this project helpful, please give it a star!** ⭐
 
 [⬆ Back to Top](#-escape-the-matrix---learning-management-system)
 
