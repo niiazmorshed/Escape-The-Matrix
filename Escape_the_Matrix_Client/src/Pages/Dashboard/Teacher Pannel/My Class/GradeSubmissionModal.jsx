@@ -119,7 +119,7 @@ const GradeSubmissionModal = ({ submission, assessment, onClose, onGraded }) => 
                 Attached File
               </h3>
               <a
-                href={`http://escape-the-matrix-sigma.vercel.app${submission.fileUrl}`}
+                href={`https://escape-the-matrix-server.vercel.app${submission.fileUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl p-4 transition-colors"

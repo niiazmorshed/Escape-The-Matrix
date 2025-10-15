@@ -15,7 +15,7 @@ const ClassDetails = () => {
 
   useEffect(() => {
     axios
-      .get(`http://escape-the-matrix-sigma.vercel.app/cla/${id}`)
+      .get(`https://escape-the-matrix-server.vercel.app/cla/${id}`)
       .then((res) => {
         setData(res.data);
       })

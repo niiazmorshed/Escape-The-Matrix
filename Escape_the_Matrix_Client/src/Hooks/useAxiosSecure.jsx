@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 
 const axiosSecure = axios.create({
-  baseURL: "http://escape-the-matrix-sigma.vercel.app",
+  baseURL: "https://escape-the-matrix-server.vercel.app",
 });
 const useAxiosSecure = () => {
   const navigate = useNavigate();
