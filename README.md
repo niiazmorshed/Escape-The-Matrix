@@ -23,21 +23,6 @@
 
 </div>
 
----
-
-## 🔗 Quick Links
-
-<div align="center">
-
-📂 **[Repository](https://github.com/niiazmorshed/Escape-The-Matrix)** |
-📝 **[Issues](https://github.com/niiazmorshed/Escape-The-Matrix/issues)** |
-🌟 **[Star this repo](https://github.com/niiazmorshed/Escape-The-Matrix)** |
-👤 **[Developer Profile](https://github.com/niiazmorshed)**
-
-</div>
-
----
-
 ## 🧪 Testing Credentials
 
 <div align="center">
