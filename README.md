@@ -30,7 +30,7 @@
 | Role           | Email                       | Password | Access Level                   |
 | -------------- | --------------------------- | -------- | ------------------------------ |
 | 👨‍💼 **Admin**   | `niaz@gmail.com`            | `1234Aa` | Full platform access           |
-| 👨‍🏫 **Teacher** | `erwin.smith4733@gmail.com` | `1234Aa` | Course & assessment management |
+| 👨‍🏫 **Teacher** | `sakib@gmail.com` | `1234Aa` | Course & assessment management |
 | 🎓 **Student** | `levi@gmail.com`            | `1234Aa` | Enroll & complete courses      |
 
 <details>
@@ -698,3 +698,4 @@ Built using the MERN Stack
 [⬆ Back to Top](#-escape-the-matrix---learning-management-system)
 
 </div>
+
